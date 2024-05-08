@@ -37,6 +37,10 @@ module.exports = {
     solidity: {
         compilers: [
             {
+                version: "0.8.20",
+                COMPILER_SETTINGS,
+            },
+            {
                 version: "0.8.7",
                 COMPILER_SETTINGS,
             },

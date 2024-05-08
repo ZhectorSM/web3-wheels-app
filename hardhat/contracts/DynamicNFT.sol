@@ -8,31 +8,33 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
-contract Wheel1 is ERC721, ERC721URIStorage, Ownable {
+contract CarNFT is ERC721, ERC721URIStorage, Ownable {
 
     using Strings for uint256;
+    using Strings for uint16;
+    using Strings for uint8;
 
     //Auto-incrementable counter
-    uint256 public _nextTokenId;
+    uint256 private _nextTokenId;
 
     //Car obj
     struct Car {
         string name;
-        string image;
         string description;
-        string year;
+        string image;       
+        string vin; //Vehicle identification number 
+        uint16 year;
         uint256 mileage_km;
-        uint256 reputation;
-        uint256 maintenance;
-        uint256 price_wei;
-        string color;
+        uint8 reputation;       
+        uint256 price_usdc; //Could be taken from an API
+        string model;     
     }
 
     //Array of cars
     Car[] public fleet;
     
     constructor(address initialOwner)
-        ERC721("Wheel1", "W3")
+        ERC721("Wheel", "W3")
         Ownable(initialOwner)
     {}
 
@@ -45,39 +47,38 @@ contract Wheel1 is ERC721, ERC721URIStorage, Ownable {
 
     //Address of the NFT owner, initial URI
     function safeMintWithValues(address to, 
-        string memory _name,
-        string memory _image,
+        string memory _name,       
         string memory _description,
-        string memory _year,
+        string memory _image,
+        string memory _vin,
+        uint16 _year,
         uint256 _mileage_km,
-        uint256 _reputation,
-        uint256 _maintenance,
-        uint256 _price_wei,
-        string memory _color) public onlyOwner {             
+        uint8 _reputation,       
+        uint256 _price_usdc,       
+        string memory _model) public onlyOwner {             
         
         uint256 tokenId = _nextTokenId++;
 
-        fleet.push(Car(_name,_image,_description,_year,_mileage_km,_reputation,_maintenance,_price_wei,_color));
+        fleet.push(Car(_name,_description,_image,_vin,_year,_mileage_km,_reputation,_price_usdc,_model));
 
         string memory uri = Base64.encode(
             bytes(
                 string(
                     abi.encodePacked(
-                        '{"name": "', fleet[tokenId].name, '",'
+                        '{"name": "', fleet[tokenId].name, '",'                        
                         '"description": "fleet[tokenId].description,',
                         '"image": "fleet[tokenId].image,',
-                        '"year": "', fleet[tokenId].year, '",'
+                        '"vin": "fleet[tokenId].vin,',
+                        '"year": ', fleet[tokenId].year.toString(), ','
                         '"attributes": [',
                             '{"trait_type": "mileage_km",',
                             '"value": ', fleet[tokenId].mileage_km.toString(),'}',
                             ',{"trait_type": "reputation",',
-                            '"value": ', fleet[tokenId].reputation.toString(),'}',
-                            ',{"trait_type": "maintenance",',
-                            '"value": ', fleet[tokenId].maintenance.toString(),'}',
-                            ',{"trait_type": "price_wei",',
-                            '"value": ', fleet[tokenId].price_wei.toString(),'}',
-                            ',{"trait_type": "color",',
-                            '"value": ', fleet[tokenId].color,'}',
+                            '"value": ', fleet[tokenId].reputation.toString(),'}',                            
+                            ',{"trait_type": "price_usdc",',
+                            '"value": ', fleet[tokenId].price_usdc.toString(),'}',                            
+                            ',{"trait_type": "model",',
+                            '"value": ', fleet[tokenId].model,'}',
                         ']}'
                     )
                 )
@@ -101,29 +102,27 @@ contract Wheel1 is ERC721, ERC721URIStorage, Ownable {
 
         //Update dynamic data
         fleet[_tokenId].mileage_km += 10;
-        fleet[_tokenId].reputation += 1;
-        //fleet[_tokenId].maintenance += 1;
-        fleet[_tokenId].price_wei -= 500;
+        fleet[_tokenId].reputation += 1;       
+        fleet[_tokenId].price_usdc -= 500;
 
         string memory uri = Base64.encode(
             bytes(
                 string(
                     abi.encodePacked(
                         '{"name": "', fleet[_tokenId].name, '",'
-                        '"image": "', fleet[_tokenId].description, '",'
+                        '"description": "', fleet[_tokenId].description, '",'
                         '"image": "', fleet[_tokenId].image, '",'
-                        '"year": "', fleet[_tokenId].year, '",'
+                        '"vin": "', fleet[_tokenId].vin, '",'
+                        '"year": "', fleet[_tokenId].year.toString(), '",'
                         '"attributes": [',
                             '{"trait_type": "mileage_km",',
                             '"value": ', fleet[_tokenId].mileage_km.toString(),'}',
                             ',{"trait_type": "reputation",',
-                            '"value": ', fleet[_tokenId].reputation.toString(),'}',
-                            ',{"trait_type": "maintenance",',
-                            '"value": ', fleet[_tokenId].maintenance.toString(),'}',
-                            ',{"trait_type": "price_wei",',
-                            '"value": ', fleet[_tokenId].price_wei.toString(),'}',
-                            ',{"trait_type": "color",',
-                            '"value": ', fleet[_tokenId].color,'}',
+                            '"value": ', fleet[_tokenId].reputation.toString(),'}',                           
+                            ',{"trait_type": "price_usdc",',
+                            '"value": ', fleet[_tokenId].price_usdc.toString(),'}',                            
+                            ',{"trait_type": "model",',
+                            '"value": ', fleet[_tokenId].model,'}',
                         ']}'
                     )
                 )
