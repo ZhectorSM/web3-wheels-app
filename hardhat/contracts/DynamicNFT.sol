@@ -22,12 +22,13 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
         string name;
         string description;
         string image;       
-        string vin; //Vehicle identification number 
-        uint16 year;
+        string vin; //Vehicle identification number      
+        string location;
         uint256 mileage_km;
-        uint8 reputation;       
+        uint8 reputation;
         uint256 price_usdc; //Could be taken from an API
-        string model;     
+        uint256 profit; //Could be taken from an API
+        uint256 expenses;
     }
 
     //Array of cars
@@ -51,15 +52,14 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
         string memory _description,
         string memory _image,
         string memory _vin,
-        uint16 _year,
+        string memory _location,        
         uint256 _mileage_km,
         uint8 _reputation,       
-        uint256 _price_usdc,       
-        string memory _model) public onlyOwner {             
+        uint256 _price_usdc) public onlyOwner {             
         
         uint256 tokenId = _nextTokenId++;
 
-        fleet.push(Car(_name,_description,_image,_vin,_year,_mileage_km,_reputation,_price_usdc,_model));
+        fleet.push(Car(_name,_description,_image,_vin,_location,_mileage_km,_reputation,_price_usdc,0,0));
 
         string memory uri = Base64.encode(
             bytes(
@@ -68,17 +68,21 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
                         '{"name": "', fleet[tokenId].name, '",'                        
                         '"description": "fleet[tokenId].description,',
                         '"image": "fleet[tokenId].image,',
-                        '"vin": "fleet[tokenId].vin,',
-                        '"year": ', fleet[tokenId].year.toString(), ','
                         '"attributes": [',
+                            '{"trait_type": "vin",',
+                            '"value": ', fleet[tokenId].vin,'}',
+                            '{"trait_type": "location",',
+                            '"value": ', fleet[tokenId].location,'}',
                             '{"trait_type": "mileage_km",',
                             '"value": ', fleet[tokenId].mileage_km.toString(),'}',
                             ',{"trait_type": "reputation",',
                             '"value": ', fleet[tokenId].reputation.toString(),'}',                            
                             ',{"trait_type": "price_usdc",',
-                            '"value": ', fleet[tokenId].price_usdc.toString(),'}',                            
-                            ',{"trait_type": "model",',
-                            '"value": ', fleet[tokenId].model,'}',
+                            '"value": ', fleet[tokenId].price_usdc.toString(),'}',
+                            ',{"trait_type": "profit",',
+                            '"value": ', fleet[tokenId].profit.toString(),'}',
+                            ',{"trait_type": "expenses",',
+                            '"value": ', fleet[tokenId].expenses.toString(),'}',                           
                         ']}'
                     )
                 )
@@ -101,28 +105,33 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
         require (_tokenId < _nextTokenId, "tokenId does not exist");//It starts at zero
 
         //Update dynamic data
-        fleet[_tokenId].mileage_km += 10;
+        fleet[_tokenId].mileage_km += 200;
         fleet[_tokenId].reputation += 1;       
-        fleet[_tokenId].price_usdc -= 500;
+        fleet[_tokenId].price_usdc -= 100;
+        fleet[_tokenId].expenses += 40;
 
         string memory uri = Base64.encode(
             bytes(
                 string(
                     abi.encodePacked(
-                        '{"name": "', fleet[_tokenId].name, '",'
-                        '"description": "', fleet[_tokenId].description, '",'
-                        '"image": "', fleet[_tokenId].image, '",'
-                        '"vin": "', fleet[_tokenId].vin, '",'
-                        '"year": "', fleet[_tokenId].year.toString(), '",'
+                        '{"name": "', fleet[_tokenId].name, '",'                        
+                        '"description": "fleet[_tokenId].description,',
+                        '"image": "fleet[_tokenId].image,',
                         '"attributes": [',
+                            '{"trait_type": "vin",',
+                            '"value": ', fleet[_tokenId].vin,'}',
+                            '{"trait_type": "location",',
+                            '"value": ', fleet[_tokenId].location,'}',
                             '{"trait_type": "mileage_km",',
                             '"value": ', fleet[_tokenId].mileage_km.toString(),'}',
                             ',{"trait_type": "reputation",',
-                            '"value": ', fleet[_tokenId].reputation.toString(),'}',                           
+                            '"value": ', fleet[_tokenId].reputation.toString(),'}',                            
                             ',{"trait_type": "price_usdc",',
-                            '"value": ', fleet[_tokenId].price_usdc.toString(),'}',                            
-                            ',{"trait_type": "model",',
-                            '"value": ', fleet[_tokenId].model,'}',
+                            '"value": ', fleet[_tokenId].price_usdc.toString(),'}',
+                            ',{"trait_type": "profit",',
+                            '"value": ', fleet[_tokenId].profit.toString(),'}',
+                            ',{"trait_type": "expenses",',
+                            '"value": ', fleet[_tokenId].expenses.toString(),'}',                           
                         ']}'
                     )
                 )
