@@ -1,0 +1,3 @@
+[submodule "web3-wheels-ml"]
+	path = web3-wheels-ml
+	url = https://github.com/rbbozkurt/web3-wheels-ml.git
