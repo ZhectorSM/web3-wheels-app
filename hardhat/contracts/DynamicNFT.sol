@@ -65,24 +65,24 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
             bytes(
                 string(
                     abi.encodePacked(
-                        '{"name": "', fleet[tokenId].name, '",'                        
-                        '"description": "fleet[tokenId].description,',
-                        '"image": "fleet[tokenId].image,',
+                        '{"name": "', fleet[tokenId].name, '",'
+                        '"description": "', fleet[tokenId].description, '",'
+                        '"image": "', fleet[tokenId].image, '",'
                         '"attributes": [',
-                            '{"trait_type": "vin",',
-                            '"value": ', fleet[tokenId].vin,'}',
-                            '{"trait_type": "location",',
-                            '"value": ', fleet[tokenId].location,'}',
-                            '{"trait_type": "mileage_km",',
+                            '{"display_type": "number","trait_type": "mileage_km",',
                             '"value": ', fleet[tokenId].mileage_km.toString(),'}',
-                            ',{"trait_type": "reputation",',
-                            '"value": ', fleet[tokenId].reputation.toString(),'}',                            
                             ',{"trait_type": "price_usdc",',
                             '"value": ', fleet[tokenId].price_usdc.toString(),'}',
+                            ',{"trait_type": "reputation",',
+                            '"value": ', fleet[tokenId].reputation.toString(),'}',
                             ',{"trait_type": "profit",',
                             '"value": ', fleet[tokenId].profit.toString(),'}',
                             ',{"trait_type": "expenses",',
-                            '"value": ', fleet[tokenId].expenses.toString(),'}',                           
+                            '"value": ', fleet[tokenId].expenses.toString(),'}',
+                            ',{"trait_type": "vin",',
+                            '"value": "', fleet[tokenId].vin,'"}',
+                            ',{"trait_type": "location",',
+                            '"value": "', fleet[tokenId].location,'"}',
                         ']}'
                     )
                 )
@@ -109,34 +109,37 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
         fleet[_tokenId].reputation += 1;       
         fleet[_tokenId].price_usdc -= 100;
         fleet[_tokenId].expenses += 40;
+        fleet[_tokenId].profit += 100;
+        
 
-        string memory uri = Base64.encode(
+         string memory uri = Base64.encode(
             bytes(
                 string(
                     abi.encodePacked(
-                        '{"name": "', fleet[_tokenId].name, '",'                        
-                        '"description": "fleet[_tokenId].description,',
-                        '"image": "fleet[_tokenId].image,',
+                        '{"name": "', fleet[_tokenId].name, '",'
+                        '"description": "', fleet[_tokenId].description, '",'
+                        '"image": "', fleet[_tokenId].image, '",'
                         '"attributes": [',
-                            '{"trait_type": "vin",',
-                            '"value": ', fleet[_tokenId].vin,'}',
-                            '{"trait_type": "location",',
-                            '"value": ', fleet[_tokenId].location,'}',
-                            '{"trait_type": "mileage_km",',
+                            '{"display_type": "number","trait_type": "mileage_km",',
                             '"value": ', fleet[_tokenId].mileage_km.toString(),'}',
-                            ',{"trait_type": "reputation",',
-                            '"value": ', fleet[_tokenId].reputation.toString(),'}',                            
                             ',{"trait_type": "price_usdc",',
                             '"value": ', fleet[_tokenId].price_usdc.toString(),'}',
+                            ',{"trait_type": "reputation",',
+                            '"value": ', fleet[_tokenId].reputation.toString(),'}',
                             ',{"trait_type": "profit",',
                             '"value": ', fleet[_tokenId].profit.toString(),'}',
                             ',{"trait_type": "expenses",',
-                            '"value": ', fleet[_tokenId].expenses.toString(),'}',                           
+                            '"value": ', fleet[_tokenId].expenses.toString(),'}',
+                            ',{"trait_type": "vin",',
+                            '"value": "', fleet[_tokenId].vin,'"}',
+                            ',{"trait_type": "location",',
+                            '"value": "', fleet[_tokenId].location,'"}',
                         ']}'
                     )
                 )
             )
         );
+
 
         // Create token URI
         string memory finalTokenURI = string(
