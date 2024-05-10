@@ -13,7 +13,7 @@ async function main() {
     const carNft = await ethers.getContractAt("CarNFT", deployer);
 
     const contract = carNft.attach(
-        "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9" // The deployed contract address
+        "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9" // The deployed contract address
     );
 
     //Get basic data
@@ -27,7 +27,7 @@ async function main() {
     const addressTo = initialOwner;
     const carName = "NftCar1";
     const description = "Tesla X";
-    const image = "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N?filename=vw_beattle.png";       
+    const image = "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N";       
     const vin = "AAA111000PK"; //Vehicle identification number 
     const location = "37.826250,-122.247604";
     const mileage_km = 60000;
