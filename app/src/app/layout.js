@@ -1,8 +1,10 @@
-import { DM_Sans, Inter } from "next/font/google";
+import { DM_Sans } from "next/font/google";
+
 import "./globals.css";
 import Header from "../components/Header";
-import Providers from "./providers";
-
+import Web3Providers from "./providers";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -10,7 +12,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
-  title: "web3 wheels",
+  title: "Web3 Wheels",
   description: "travel smarter"
 };
 
@@ -18,10 +20,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={dmSans.className}>
-        <Providers>
+        <Web3Providers>
           <Header />
           {children}
-        </Providers>
+          <ToastContainer />
+        </Web3Providers>
       </body>
     </html>
   );

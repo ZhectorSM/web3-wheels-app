@@ -9,19 +9,27 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 const queryClient = new QueryClient();
 
 const config = getDefaultConfig ({
-  appName: "Web3 wheels",
+  appName: "Web3 Wheels",
   projectId: process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID ?? "",
   chains: [mainnet, polygon, sepolia],
 });
 
-const Providers = ({children}) => {
+const Web3Providers = ({children}) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        <RainbowKitProvider
+          appInfo={{
+            appName: "Web3 Wheels",
+            learnMoreUrl: "https://github.com/ZhectorSM/web3-wheels-app"
+          }}
+          coolMode
+        >
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 };
 
-export default Providers;
+export default Web3Providers;
