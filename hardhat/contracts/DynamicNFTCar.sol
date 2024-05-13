@@ -5,10 +5,23 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
-contract CarNFT is ERC721, ERC721URIStorage, Ownable {
+
+contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
+ 
+    modifier onlyCarOwner(uint256 _tokenId) {        
+        //Token id validation
+        require (_tokenId < _nextTokenId, "TokenId does not exist");//It starts at zero
+        //Owner validation
+        address carOwner =  _ownerOf(_tokenId);
+        require(carOwner == _msgSender(), "Only the Car Owner is allowed to perform this action");
+        _;
+    }
+
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     using Strings for uint256;
     using Strings for uint16;
@@ -19,6 +32,7 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
 
     //Car obj
     struct Car {
+        address owner;
         string name;
         string description;
         string image;       
@@ -32,15 +46,16 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
     }
 
     //Array of cars
-    Car[] public fleet;
-    
-    constructor(address initialOwner)
-        ERC721("Wheel", "W3")
-        Ownable(initialOwner)
-    {}
+    Car[] public fleet;    
+
+    constructor(address defaultAdmin) ERC721("Web3Wheels", "W3W") {
+        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+        _grantRole(MINTER_ROLE, defaultAdmin);
+    }
+
 
     //Address of the NFT owner, initial URI
-    function safeMint(address to, string memory uri) public onlyOwner { 
+    function safeMint(address to, string memory uri) private onlyRole(MINTER_ROLE)  { 
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
@@ -55,11 +70,11 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
         string memory _location,        
         uint256 _mileage_km,
         uint8 _reputation,       
-        uint256 _price_usdc) public onlyOwner {             
+        uint256 _price_usdc) public onlyRole(MINTER_ROLE)  {
         
         uint256 tokenId = _nextTokenId++;
 
-        fleet.push(Car(_name,_description,_image,_vin,_location,_mileage_km,_reputation,_price_usdc,0,0));
+        fleet.push(Car(to,_name,_description,_image,_vin,_location,_mileage_km,_reputation,_price_usdc,0,0));
 
         string memory uri = Base64.encode(
             bytes(
@@ -101,13 +116,12 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
 
 
     //Updates the URI of th especified token - Arbitrary values
-    function updateMetadata(uint256 _tokenId) public {        
-        require (_tokenId < _nextTokenId, "tokenId does not exist");//It starts at zero
+    function updateMetadata(uint256 _tokenId) public onlyCarOwner(_tokenId) {                
 
         //Update dynamic data
         fleet[_tokenId].mileage_km += 200;
-        fleet[_tokenId].reputation += 1;       
-        fleet[_tokenId].price_usdc -= 100;
+        fleet[_tokenId].reputation += 1;     
+        fleet[_tokenId].price_usdc -= 10;
         fleet[_tokenId].expenses += 40;
         fleet[_tokenId].profit += 100;
         
@@ -149,6 +163,11 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
 
     }
 
+    // function that returns entire fleet
+    function getFleet() public view returns (Car[] memory) {
+        return fleet;
+    }
+
 
     // The following functions are overrides required by Solidity.
 
@@ -164,7 +183,7 @@ contract CarNFT is ERC721, ERC721URIStorage, Ownable {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, ERC721URIStorage)
+        override(ERC721, ERC721URIStorage, AccessControl)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

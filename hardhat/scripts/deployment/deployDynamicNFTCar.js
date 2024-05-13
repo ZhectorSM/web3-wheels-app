@@ -6,7 +6,7 @@ const {
 } = require("../../helper-hardhat-config");
 require("dotenv").config();
 
-async function deployDynamicNFT(chainId) {
+async function deployDynamicNFTCar(chainId) {
     let priceFeedContract;
 
     if (developmentChains.includes(network.name)) {
@@ -15,10 +15,10 @@ async function deployDynamicNFT(chainId) {
         //Do nothing 
     }
 
-    const initialOwner = process.env.PUBLIC_ADDRESS;
+    const defaultAdmin = process.env.PUBLIC_ADDRESS;
 
-    const dynamicNftFactory = await ethers.getContractFactory("CarNFT");
-    const dynamicNftContract = await dynamicNftFactory.deploy(initialOwner);
+    const dynamicNftFactory = await ethers.getContractFactory("DynamicNFTCar");
+    const dynamicNftContract = await dynamicNftFactory.deploy(defaultAdmin);
 
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
@@ -30,11 +30,11 @@ async function deployDynamicNFT(chainId) {
     /*if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
         await run("verify:verify", {
             address: dynamicNftContract.target,
-            constructorArguments: [initialOwner],
+            constructorArguments: [defaultAdmin],
         });
     }*/
 }
 
 module.exports = {
-    deployDynamicNFT
+    deployDynamicNFTCar
 };

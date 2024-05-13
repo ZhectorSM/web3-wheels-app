@@ -7,24 +7,25 @@ const {
 async function main() {
   try {
       
-    const initialOwner = process.env.PUBLIC_ADDRESS;
+    const minter = process.env.PUBLIC_ADDRESS;
+    const adminRol = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
     const [deployer] = await ethers.getSigners();    
-    const carNft = await ethers.getContractAt("CarNFT", deployer);
+    const carNft = await ethers.getContractAt("DynamicNFTCar", deployer);
 
     const contract = carNft.attach(
-        "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9" // The deployed contract address
+        "0x5FbDB2315678afecb367f032d93F642f64180aa3" // The deployed contract address
     );
 
     //Get basic data
     const name = await contract.name();
     const symbol = await contract.symbol();
-    const owner = await contract.owner();
+    const hasAdminRole = await contract.hasRole(adminRol,deployer);
     console.log(name);
     console.log(symbol);
-    console.log(owner);
+    console.log(hasAdminRole);
 
-    const addressTo = initialOwner;
+    const addressTo = minter;
     const carName = "NftCar1";
     const description = "Tesla X";
     const image = "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N";       
