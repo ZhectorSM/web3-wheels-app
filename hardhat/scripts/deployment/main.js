@@ -24,7 +24,7 @@ async function main() {
     //await deployRandomNumberConsumer(chainId);
     //await deployRandomNumberDirectFundingConsumer(chainId);
 
-    //Web3weels
+    //Web3Wheels
     await deployDynamicNFTCar(chainId);
 
 }
