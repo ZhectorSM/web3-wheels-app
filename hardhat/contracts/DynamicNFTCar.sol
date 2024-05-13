@@ -10,9 +10,16 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
 
-error NotCarOwner();
-
-contract CarNFT is ERC721, ERC721URIStorage, AccessControl {
+contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
+ 
+    modifier onlyCarOwner(uint256 _tokenId) {        
+        //Token id validation
+        require (_tokenId < _nextTokenId, "TokenId does not exist");//It starts at zero
+        //Owner validation
+        address carOwner =  _ownerOf(_tokenId);
+        require(carOwner == _msgSender(), "Only the Car Owner is allowed to perform this action");
+        _;
+    }
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -109,15 +116,7 @@ contract CarNFT is ERC721, ERC721URIStorage, AccessControl {
 
 
     //Updates the URI of th especified token - Arbitrary values
-    function updateMetadata(uint256 _tokenId) public {        
-        require (_tokenId < _nextTokenId, "tokenId does not exist");//It starts at zero
-        
-        //Only the car owner can update the car metadata
-        address carOwner =  _ownerOf(_tokenId);
-        if(carOwner != msg.sender){
-            revert NotCarOwner();
-        }
-
+    function updateMetadata(uint256 _tokenId) public onlyCarOwner(_tokenId) {                
 
         //Update dynamic data
         fleet[_tokenId].mileage_km += 200;
