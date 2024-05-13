@@ -163,6 +163,11 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
 
     }
 
+    // function that returns entire fleet
+    function getFleet() public view returns (Car[] memory) {
+        return fleet;
+    }
+
 
     // The following functions are overrides required by Solidity.
 
