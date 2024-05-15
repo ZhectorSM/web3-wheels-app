@@ -6,9 +6,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
+
+enum CarStatus { NEW, FOR_SALE, SOLD }
 
 contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
  
@@ -43,6 +44,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         uint256 price_usdc; //Could be taken from an API
         uint256 profit; //Could be taken from an API
         uint256 expenses;
+        CarStatus status;
     }
 
     //Array of cars
@@ -74,7 +76,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         
         uint256 tokenId = _nextTokenId++;
 
-        fleet.push(Car(to,_name,_description,_image,_vin,_location,_mileage_km,_reputation,_price_usdc,0,0));
+        fleet.push(Car(to,_name,_description,_image,_vin,_location,_mileage_km,_reputation,_price_usdc,0,0, CarStatus.NEW));
 
         string memory uri = Base64.encode(
             bytes(
@@ -164,8 +166,45 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     }
 
     // function that returns entire fleet
-    function getFleet() public view returns (Car[] memory) {
+    function getFleet() public view returns (Car[] memory) {        
         return fleet;
+    }
+
+    
+    //Car Market operations  
+    function setForSale(uint256 _tokenId, address carMarket) external onlyCarOwner(_tokenId) {    
+        CarStatus carStatus = fleet[_tokenId].status;
+        require(carStatus == CarStatus.NEW, "The car is not available");
+
+        approve(carMarket, _tokenId);
+        fleet[_tokenId].status = CarStatus.FOR_SALE;
+    }
+
+    //Could be moved to the market smart contract?(performing here only safeTransferFrom)
+    function buyCar(uint256 _tokenId, address _buyer, uint256 _payedPrice) external payable {
+
+        address carMarket = _msgSender();
+
+        //Token id validation
+        require (_tokenId < _nextTokenId, "TokenId does not exist");//It starts at zero
+
+        //The cars need to be available
+        CarStatus carStatus = fleet[_tokenId].status;
+        require(carStatus == CarStatus.FOR_SALE, "The car is not available");
+
+        //Check the amount send is equals o bigger than the car price --make usdc convertion
+        uint256 carPrice = fleet[_tokenId].price_usdc;
+        require(carPrice <= _payedPrice, "Unable to perform the transaction. Not enough funds");
+
+        //The shop contract need to be approved to transfer the token (Approved after minting calling setForSale)
+        require(getApproved(_tokenId) == carMarket, "Shop not approved");
+
+        //Transfer the token    
+        address carOwner = _ownerOf(_tokenId);
+        safeTransferFrom(carOwner, _buyer, _tokenId);
+      
+        fleet[_tokenId].owner = _buyer;
+        fleet[_tokenId].status = CarStatus.SOLD;
     }
 
 
