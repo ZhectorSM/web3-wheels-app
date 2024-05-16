@@ -38,7 +38,7 @@ async function main() {
     const expenses = 0; //Hardcoded to zero to start with
 
     //Mint nft
-    const txMint = await contract.safeMintWithValues(addressTo,carName,description,image,vin,location,mileage_km,reputation,price_usdc);
+    const txMint = await contract.safeMintWithValues(addressTo,carName,description,image,vin,location,price_usdc);
     await txMint.wait(VERIFICATION_BLOCK_CONFIRMATIONS);
     console.log("Minted car")
     
@@ -47,13 +47,12 @@ async function main() {
     const mintedCar = await contract.fleet(tokenId);
     console.log(mintedCar);
     //Change metadata   
-    const txUpdate = await contract.updateMetadata(tokenId);
+    const txUpdate = await contract.updateCarEOD(tokenId, 100, 4, 40, 210);
     await txUpdate.wait(VERIFICATION_BLOCK_CONFIRMATIONS);
     //Get updated car
     const updatedCar = await contract.fleet(tokenId);
     console.log(updatedCar);
-
-    
+   
   } catch (error) {
     console.error(error);
     process.exit(1);
