@@ -16,7 +16,6 @@ contract CarMarket {
     constructor(address _NftCarAddress){        
           carInterface = NftCarInterface(_NftCarAddress);
     }
-
    
     function buyCar(uint256 _tokenId) external payable {
 

@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
+import "./PriceConverter.sol";
 
 
 enum CarStatus { NEW, FOR_SALE, SOLD }
@@ -24,6 +25,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
+    using PriceConverter for uint256;
     using Strings for uint256;
     using Strings for uint16;
     using Strings for uint8;
@@ -41,7 +43,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         string location;
         uint256 mileage_km;
         uint8 reputation;
-        uint256 price_usdc; //Could be taken from an API
+        uint256 price_usd; //Could be taken from an API       
         uint256 profit; //Could be taken from an API
         uint256 expenses;
         CarStatus status;
@@ -69,14 +71,12 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         string memory _description,
         string memory _image,
         string memory _vin,
-        string memory _location,        
-        uint256 _mileage_km,
-        uint8 _reputation,       
-        uint256 _price_usdc) public onlyRole(MINTER_ROLE)  {
+        string memory _location,       
+        uint256 _price_usd) public onlyRole(MINTER_ROLE)  {
         
         uint256 tokenId = _nextTokenId++;
 
-        fleet.push(Car(to,_name,_description,_image,_vin,_location,_mileage_km,_reputation,_price_usdc,0,0, CarStatus.NEW));
+        fleet.push(Car(to,_name,_description,_image,_vin,_location,0,0,_price_usd,0,0, CarStatus.NEW));
 
         string memory uri = Base64.encode(
             bytes(
@@ -88,8 +88,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
                         '"attributes": [',
                             '{"display_type": "number","trait_type": "mileage_km",',
                             '"value": ', fleet[tokenId].mileage_km.toString(),'}',
-                            ',{"trait_type": "price_usdc",',
-                            '"value": ', fleet[tokenId].price_usdc.toString(),'}',
+                            ',{"trait_type": "price_usd",',
+                            '"value": ', fleet[tokenId].price_usd.toString(),'}',                           
                             ',{"trait_type": "reputation",',
                             '"value": ', fleet[tokenId].reputation.toString(),'}',
                             ',{"trait_type": "profit",',
@@ -117,16 +117,21 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     }
 
 
-    //Updates the URI of th especified token - Arbitrary values
-    function updateMetadata(uint256 _tokenId) public onlyCarOwner(_tokenId) {                
+    //Updates the data from the API call to the backend EOD
+    function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint8 _reputation, uint256 _expenses, uint256 _profit) public onlyCarOwner(_tokenId) { 
 
-        //Update dynamic data
-        fleet[_tokenId].mileage_km += 200;
-        fleet[_tokenId].reputation += 1;     
-        fleet[_tokenId].price_usdc -= 10;
-        fleet[_tokenId].expenses += 40;
-        fleet[_tokenId].profit += 100;
-        
+        //Update data
+        fleet[_tokenId].mileage_km = _mileage_km;
+        fleet[_tokenId].reputation = _reputation;            
+        fleet[_tokenId].expenses += _expenses;
+        fleet[_tokenId].profit += _profit; 
+
+        updateMetadata(_tokenId);
+
+    }
+ 
+    //Updates the URI of th especified token
+    function updateMetadata(uint256 _tokenId) internal onlyCarOwner(_tokenId) {        
 
          string memory uri = Base64.encode(
             bytes(
@@ -138,8 +143,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
                         '"attributes": [',
                             '{"display_type": "number","trait_type": "mileage_km",',
                             '"value": ', fleet[_tokenId].mileage_km.toString(),'}',
-                            ',{"trait_type": "price_usdc",',
-                            '"value": ', fleet[_tokenId].price_usdc.toString(),'}',
+                            ',{"trait_type": "price_usd",',                           
+                            '"value": ', fleet[_tokenId].price_usd.toString(),'}',
                             ',{"trait_type": "reputation",',
                             '"value": ', fleet[_tokenId].reputation.toString(),'}',
                             ',{"trait_type": "profit",',
@@ -165,19 +170,26 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
 
     }
 
-    // function that returns entire fleet
+
+    // *****Car Market operations*****
+
+    //Function that returns entire fleet
     function getFleet() public view returns (Car[] memory) {        
         return fleet;
     }
-
     
-    //Car Market operations  
-    function setForSale(uint256 _tokenId, address carMarket) external onlyCarOwner(_tokenId) {    
+    //Function to set a car for sale
+    function setForSale(uint256 _tokenId, address carMarket, uint256 _listing_price_usd) external onlyCarOwner(_tokenId) {    
         CarStatus carStatus = fleet[_tokenId].status;
-        require(carStatus == CarStatus.NEW, "The car is not available");
-
+        require(carStatus == CarStatus.NEW || carStatus == CarStatus.SOLD, "The car is not available");
+        //Approve seller
         approve(carMarket, _tokenId);
+        
+        //Update data
         fleet[_tokenId].status = CarStatus.FOR_SALE;
+        fleet[_tokenId].price_usd = _listing_price_usd;        
+
+        updateMetadata(_tokenId);
     }
 
     //Could be moved to the market smart contract?(performing here only safeTransferFrom)
@@ -192,9 +204,10 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         CarStatus carStatus = fleet[_tokenId].status;
         require(carStatus == CarStatus.FOR_SALE, "The car is not available");
 
-        //Check the amount send is equals o bigger than the car price --make usdc convertion
-        uint256 carPrice = fleet[_tokenId].price_usdc;
-        require(carPrice <= _payedPrice, "Unable to perform the transaction. Not enough funds");
+        //Check the amount send is equals o bigger than the car price        
+        uint256 usdPayedPrice = _payedPrice.getConversionRate();//Convert ETH to USD
+        uint256 carPriceUsd = fleet[_tokenId].price_usd;
+        require(carPriceUsd <= usdPayedPrice, "Unable to perform the transaction. Not enough funds");
 
         //The shop contract need to be approved to transfer the token (Approved after minting calling setForSale)
         require(getApproved(_tokenId) == carMarket, "Shop not approved");
