@@ -44,7 +44,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         uint256 mileage_km;
         uint8 reputation;
         uint256 price_usd; //Could be taken from an API       
-        uint256 profit; //Could be taken from an API
+        uint256 revenue; //Could be taken from an API
         uint256 expenses;
         CarStatus status;
     }
@@ -92,8 +92,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
                             '"value": ', fleet[tokenId].price_usd.toString(),'}',                           
                             ',{"trait_type": "reputation",',
                             '"value": ', fleet[tokenId].reputation.toString(),'}',
-                            ',{"trait_type": "profit",',
-                            '"value": ', fleet[tokenId].profit.toString(),'}',
+                            ',{"trait_type": "revenue",',
+                            '"value": ', fleet[tokenId].revenue.toString(),'}',
                             ',{"trait_type": "expenses",',
                             '"value": ', fleet[tokenId].expenses.toString(),'}',
                             ',{"trait_type": "vin",',
@@ -118,13 +118,13 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
 
 
     //Updates the data from the API call to the backend EOD
-    function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint8 _reputation, uint256 _expenses, uint256 _profit) public onlyCarOwner(_tokenId) { 
+    function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint8 _reputation, uint256 _expenses, uint256 _revenue) public onlyCarOwner(_tokenId) { 
 
         //Update data
         fleet[_tokenId].mileage_km = _mileage_km;
         fleet[_tokenId].reputation = _reputation;            
         fleet[_tokenId].expenses += _expenses;
-        fleet[_tokenId].profit += _profit; 
+        fleet[_tokenId].revenue += _revenue; 
 
         updateMetadata(_tokenId);
 
@@ -147,8 +147,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
                             '"value": ', fleet[_tokenId].price_usd.toString(),'}',
                             ',{"trait_type": "reputation",',
                             '"value": ', fleet[_tokenId].reputation.toString(),'}',
-                            ',{"trait_type": "profit",',
-                            '"value": ', fleet[_tokenId].profit.toString(),'}',
+                            ',{"trait_type": "revenue",',
+                            '"value": ', fleet[_tokenId].revenue.toString(),'}',
                             ',{"trait_type": "expenses",',
                             '"value": ', fleet[_tokenId].expenses.toString(),'}',
                             ',{"trait_type": "vin",',
