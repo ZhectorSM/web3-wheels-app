@@ -12,15 +12,20 @@ async function main() {
 
     const [deployer] = await ethers.getSigners();    
     const carNft = await ethers.getContractAt("DynamicNFTCar", deployer);
-
-    const contract = carNft.attach(
-        "0x5FbDB2315678afecb367f032d93F642f64180aa3" // The deployed contract address
+    const carNftContract = carNft.attach(
+        "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0" // The deployed contract address
     );
 
+    const priceConverter = await ethers.getContractAt("PriceConsumerV3", deployer);
+    const priceConverterContract = priceConverter.attach(
+        "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" // The deployed contract address
+    );
+
+
     //Get basic data
-    const name = await contract.name();
-    const symbol = await contract.symbol();
-    const hasAdminRole = await contract.hasRole(adminRol,deployer);
+    const name = await carNftContract.name();
+    const symbol = await carNftContract.symbol();
+    const hasAdminRole = await carNftContract.hasRole(adminRol,deployer);
     console.log(name);
     console.log(symbol);
     console.log(hasAdminRole);
@@ -34,24 +39,33 @@ async function main() {
     const mileage_km = 60000;
     const reputation = 5;       
     const price_usdc = 40000; //Could be taken from an API
-    const profit = 0; //Hardcoded to zero to start with
+    const revenue = 0; //Hardcoded to zero to start with
     const expenses = 0; //Hardcoded to zero to start with
 
     //Mint nft
-    const txMint = await contract.safeMintWithValues(addressTo,carName,description,image,vin,location,price_usdc);
+    const txMint = await carNftContract.safeMintWithValues(addressTo,carName,description,image,vin,location,price_usdc);
     await txMint.wait(VERIFICATION_BLOCK_CONFIRMATIONS);
     console.log("Minted car")
     
     //Get minted car
     const tokenId = 0;
-    const mintedCar = await contract.fleet(tokenId);
+    const mintedCar = await carNftContract.fleet(tokenId);
     console.log(mintedCar);
     //Change metadata   
-    const txUpdate = await contract.updateCarEOD(tokenId, 100, 4, 40, 210);
+    const txUpdate = await carNftContract.updateCarEOD(tokenId, 100, 4, 40, 210);
     await txUpdate.wait(VERIFICATION_BLOCK_CONFIRMATIONS);
     //Get updated car
-    const updatedCar = await contract.fleet(tokenId);
+    const updatedCar = await carNftContract.fleet(tokenId);
     console.log(updatedCar);
+
+    //Last price from feed
+    const latestPrice = await priceConverterContract.getLatestPrice(); 
+    console.log("Price is: ", BigInt(latestPrice).toString());
+    /* Equivalent
+      await priceConverterContract.getLatestPrice().then((data) => {
+      console.log("Price is: ", BigInt(data).toString())
+    })   
+    */
    
   } catch (error) {
     console.error(error);
