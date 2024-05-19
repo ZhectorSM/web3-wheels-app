@@ -56,15 +56,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, defaultAdmin);
     }
-
-
-    //Address of the NFT owner, initial URI
-    function safeMint(address to, string memory uri) private onlyRole(MINTER_ROLE)  { 
-        uint256 tokenId = _nextTokenId;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-    }    
-
+   
     //Address of the NFT owner, initial URI
     function safeMintWithValues(address to, 
         string memory _name,       
