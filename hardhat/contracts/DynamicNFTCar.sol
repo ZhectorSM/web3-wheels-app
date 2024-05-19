@@ -56,15 +56,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, defaultAdmin);
     }
-
-
-    //Address of the NFT owner, initial URI
-    function safeMint(address to, string memory uri) private onlyRole(MINTER_ROLE)  { 
-        uint256 tokenId = _nextTokenId++;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-    }    
-
+   
     //Address of the NFT owner, initial URI
     function safeMintWithValues(address to, 
         string memory _name,       
@@ -73,101 +65,63 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         string memory _vin,
         string memory _location,       
         uint256 _price_usd) public onlyRole(MINTER_ROLE)  {
-        
-        uint256 tokenId = _nextTokenId++;
-
+              
         fleet.push(Car(to,_name,_description,_image,_vin,_location,0,0,_price_usd,0,0, CarStatus.NEW));
+       
+        uint256 tokenId = _nextTokenId;
+        string memory uri = _createTokenURI(fleet[tokenId]);
+        _safeMintWithURI(to, uri);
 
-        string memory uri = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "', fleet[tokenId].name, '",'
-                        '"description": "', fleet[tokenId].description, '",'
-                        '"image": "', fleet[tokenId].image, '",'
-                        '"attributes": [',
-                            '{"display_type": "number","trait_type": "mileage_km",',
-                            '"value": ', fleet[tokenId].mileage_km.toString(),'}',
-                            ',{"trait_type": "price_usd",',
-                            '"value": ', fleet[tokenId].price_usd.toString(),'}',                           
-                            ',{"trait_type": "reputation",',
-                            '"value": ', fleet[tokenId].reputation.toString(),'}',
-                            ',{"trait_type": "revenue",',
-                            '"value": ', fleet[tokenId].revenue.toString(),'}',
-                            ',{"trait_type": "expenses",',
-                            '"value": ', fleet[tokenId].expenses.toString(),'}',
-                            ',{"trait_type": "vin",',
-                            '"value": "', fleet[tokenId].vin,'"}',
-                            ',{"trait_type": "location",',
-                            '"value": "', fleet[tokenId].location,'"}',
-                        ']}'
-                    )
-                )
-            )
-        );
-
-        // Create token URI
-        string memory finalTokenURI = string(
-            abi.encodePacked("data:application/json;base64,", uri)
-        );         
-        
-        
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, finalTokenURI);
     }
 
+
+    // Mint function with initial URI (private as it's used internally)
+    function _safeMintWithURI(address to, string memory uri) private onlyRole(MINTER_ROLE) {    
+        uint256 tokenId = _nextTokenId;
+        _safeMint(to, tokenId);//Need to do -1 because it was incresed already in the mint method
+        _setTokenURI(tokenId, uri);        
+        _nextTokenId++;        
+    }
 
     //Updates the data from the API call to the backend EOD
     function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint8 _reputation, uint256 _expenses, uint256 _revenue) public onlyCarOwner(_tokenId) { 
 
         //Update data
-        fleet[_tokenId].mileage_km = _mileage_km;
-        fleet[_tokenId].reputation = _reputation;            
-        fleet[_tokenId].expenses += _expenses;
-        fleet[_tokenId].revenue += _revenue; 
+        Car storage car = fleet[_tokenId];
+        car.mileage_km = _mileage_km;
+        car.reputation = _reputation;
+        car.expenses += _expenses;
+        car.revenue += _revenue;
 
-        updateMetadata(_tokenId);
+        string memory uri = _createTokenURI(car);
+        _setTokenURI(_tokenId, uri);
 
     }
  
-    //Updates the URI of th especified token
-    function updateMetadata(uint256 _tokenId) internal onlyCarOwner(_tokenId) {        
-
-         string memory uri = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "', fleet[_tokenId].name, '",'
-                        '"description": "', fleet[_tokenId].description, '",'
-                        '"image": "', fleet[_tokenId].image, '",'
-                        '"attributes": [',
-                            '{"display_type": "number","trait_type": "mileage_km",',
-                            '"value": ', fleet[_tokenId].mileage_km.toString(),'}',
-                            ',{"trait_type": "price_usd",',                           
-                            '"value": ', fleet[_tokenId].price_usd.toString(),'}',
-                            ',{"trait_type": "reputation",',
-                            '"value": ', fleet[_tokenId].reputation.toString(),'}',
-                            ',{"trait_type": "revenue",',
-                            '"value": ', fleet[_tokenId].revenue.toString(),'}',
-                            ',{"trait_type": "expenses",',
-                            '"value": ', fleet[_tokenId].expenses.toString(),'}',
-                            ',{"trait_type": "vin",',
-                            '"value": "', fleet[_tokenId].vin,'"}',
-                            ',{"trait_type": "location",',
-                            '"value": "', fleet[_tokenId].location,'"}',
-                        ']}'
+ 
+     // Function to create the token URI
+    function _createTokenURI(Car memory car) internal pure returns (string memory) {
+        return string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(
+                    bytes(
+                        abi.encodePacked(
+                            '{"name":"', car.name, '",',
+                            '"description":"', car.description, '",',
+                            '"image":"', car.image, '",',
+                            '"attributes":[{"trait_type":"mileage_km","value":"', car.mileage_km.toString(), '"},',
+                            '{"trait_type":"price_usd","value":"', car.price_usd.toString(), '"},',
+                            '{"trait_type":"reputation","value":"', car.reputation.toString(), '"},',
+                            '{"trait_type":"revenue","value":"', car.revenue.toString(), '"},',
+                            '{"trait_type":"expenses","value":"', car.expenses.toString(), '"},',
+                            '{"trait_type":"vin","value":"', car.vin, '"},',
+                            '{"trait_type":"location","value":"', car.location, '"}]}'
+                        )
                     )
                 )
             )
         );
-
-
-        // Create token URI
-        string memory finalTokenURI = string(
-            abi.encodePacked("data:application/json;base64,", uri)
-        );
-        _setTokenURI(_tokenId, finalTokenURI);       
-
     }
 
 
@@ -180,34 +134,36 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     
     //Function to set a car for sale
     function setForSale(uint256 _tokenId, address carMarket, uint256 _listing_price_usd) external onlyCarOwner(_tokenId) {    
-        CarStatus carStatus = fleet[_tokenId].status;
-        require(carStatus == CarStatus.NEW || carStatus == CarStatus.SOLD, "The car is not available");
+        Car storage car = fleet[_tokenId];
+
+        require(car.status == CarStatus.NEW || car.status == CarStatus.SOLD, "The car is not available");
         //Approve seller
         approve(carMarket, _tokenId);
         
         //Update data
-        fleet[_tokenId].status = CarStatus.FOR_SALE;
-        fleet[_tokenId].price_usd = _listing_price_usd;        
+        car.status = CarStatus.FOR_SALE;
+        car.price_usd = _listing_price_usd;        
 
-        updateMetadata(_tokenId);
+        string memory uri = _createTokenURI(car);
+        _setTokenURI(_tokenId, uri);
     }
 
     //Could be moved to the market smart contract?(performing here only safeTransferFrom)
     function buyCar(uint256 _tokenId, address _buyer, uint256 _payedPrice) external payable {
 
-        address carMarket = _msgSender();
+        address carMarket = _msgSender();        
 
         //Token id validation
         require (_tokenId < _nextTokenId, "TokenId does not exist");//It starts at zero
+         
+        Car storage car = fleet[_tokenId];
 
         //The cars need to be available
-        CarStatus carStatus = fleet[_tokenId].status;
-        require(carStatus == CarStatus.FOR_SALE, "The car is not available");
+        require(car.status == CarStatus.FOR_SALE, "The car is not available");
 
         //Check the amount send is equals o bigger than the car price        
-        uint256 usdPayedPrice = _payedPrice.getConversionRate();//Convert ETH to USD
-        uint256 carPriceUsd = fleet[_tokenId].price_usd;
-        require(carPriceUsd <= usdPayedPrice, "Unable to perform the transaction. Not enough funds");
+        uint256 usdPayedPrice = _payedPrice.getConversionRate();//Convert ETH to USD        
+        require(car.price_usd <= usdPayedPrice, "Unable to perform the transaction. Not enough funds");
 
         //The shop contract need to be approved to transfer the token (Approved after minting calling setForSale)
         require(getApproved(_tokenId) == carMarket, "Shop not approved");
@@ -216,8 +172,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         address carOwner = _ownerOf(_tokenId);
         safeTransferFrom(carOwner, _buyer, _tokenId);
       
-        fleet[_tokenId].owner = _buyer;
-        fleet[_tokenId].status = CarStatus.SOLD;
+        car.owner = _buyer;
+        car.status = CarStatus.SOLD;
     }
 
 

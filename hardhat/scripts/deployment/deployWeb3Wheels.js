@@ -31,10 +31,10 @@ async function deployWeb3Wheels(chainId) {
 
 
     //FEED
-    const priceConsumerV3Factory = await ethers.getContractFactory("PriceConsumerV3");
-    const priceConsumerV3 = await priceConsumerV3Factory.deploy(priceFeedContract);   
-    await priceConsumerV3.deploymentTransaction().wait(waitBlockConfirmations);
-    console.log(`ETH/USD Price Consumer deployed to ${priceConsumerV3.target} on ${network.name}`)
+    /*const priceConverterFactory = await ethers.getContractFactory("PriceConverter");
+    const priceConverterV3 = await priceConverterFactory.deploy(priceFeedContract);   
+    await priceConverterV3.deploymentTransaction().wait(waitBlockConfirmations);
+    console.log(`ETH/USD Price Consumer deployed to ${priceConverterV3.target} on ${network.name}`)*/
 
 
     //DYNAMIC NFT
