@@ -11,6 +11,9 @@ interface NftCarInterface {
 
 contract CarMarket {
 
+    //Events
+    event TxEvent(string action, uint256 tokenId);
+
     NftCarInterface public carInterface;
 
     constructor(address _NftCarAddress){        
@@ -27,7 +30,11 @@ contract CarMarket {
 
         //transferFunds
         (bool sent, ) = payable (originalOwner).call{value: msg.value}("");
-        require(sent, "Failed to emit payment");       
+        require(sent, "Failed to emit payment"); 
+
+        //Events
+        emit TxEvent("Car sold succesfully", _tokenId);
+
     }
 
     //fallback funtion instead of fund (When a function does not exist) - receive / fallback
