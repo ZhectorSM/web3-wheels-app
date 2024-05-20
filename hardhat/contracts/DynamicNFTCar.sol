@@ -19,10 +19,14 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         require (_tokenId < _nextTokenId, "TokenId does not exist");//It starts at zero
         //Owner validation
         address carOwner =  _ownerOf(_tokenId);
-        require(carOwner == _msgSender(), "Only the Car Owner is allowed to perform this action");
+        require(carOwner == _msgSender(), "Not authorized. CarOwner only");
         _;
     }
 
+    //Events
+    event CarEvent(string action, Car car);
+
+    //Roles
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     using PriceConverter for uint256;
@@ -43,8 +47,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         string location;
         uint256 mileage_km;
         uint8 reputation;
-        uint256 price_usd; //Could be taken from an API       
-        uint256 revenue; //Could be taken from an API
+        uint256 price_usd;
+        uint256 revenue;
         uint256 expenses;
         CarStatus status;
     }
@@ -79,8 +83,10 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     function _safeMintWithURI(address to, string memory uri) private onlyRole(MINTER_ROLE) {    
         uint256 tokenId = _nextTokenId;
         _safeMint(to, tokenId);//Need to do -1 because it was incresed already in the mint method
-        _setTokenURI(tokenId, uri);        
-        _nextTokenId++;        
+        _setTokenURI(tokenId, uri);          
+        _nextTokenId++;               
+
+        emit CarEvent("Minted car", fleet[tokenId]);
     }
 
     //Updates the data from the API call to the backend EOD
@@ -96,6 +102,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         string memory uri = _createTokenURI(car);
         _setTokenURI(_tokenId, uri);
 
+        emit CarEvent("Updated car EOD", fleet[_tokenId]);
     }
  
  
@@ -115,6 +122,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
                             '{"trait_type":"reputation","value":"', car.reputation.toString(), '"},',
                             '{"trait_type":"revenue","value":"', car.revenue.toString(), '"},',
                             '{"trait_type":"expenses","value":"', car.expenses.toString(), '"},',
+                            '{"trait_type":"status","value":"', uint(car.status).toString(), '"},',
                             '{"trait_type":"vin","value":"', car.vin, '"},',
                             '{"trait_type":"location","value":"', car.location, '"}]}'
                         )
@@ -136,7 +144,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     function setForSale(uint256 _tokenId, address carMarket, uint256 _listing_price_usd) external onlyCarOwner(_tokenId) {    
         Car storage car = fleet[_tokenId];
 
-        require(car.status == CarStatus.NEW || car.status == CarStatus.SOLD, "The car is not available");
+        require(car.status == CarStatus.NEW || car.status == CarStatus.SOLD, "Car not available");
         //Approve seller
         approve(carMarket, _tokenId);
         
@@ -146,6 +154,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
 
         string memory uri = _createTokenURI(car);
         _setTokenURI(_tokenId, uri);
+
+        emit CarEvent("Car for sale", fleet[_tokenId]);
     }
 
     //Could be moved to the market smart contract?(performing here only safeTransferFrom)
@@ -159,11 +169,11 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         Car storage car = fleet[_tokenId];
 
         //The cars need to be available
-        require(car.status == CarStatus.FOR_SALE, "The car is not available");
+        require(car.status == CarStatus.FOR_SALE, "Car not available");
 
         //Check the amount send is equals o bigger than the car price        
         uint256 usdPayedPrice = _payedPrice.getConversionRate();//Convert ETH to USD        
-        require(car.price_usd <= usdPayedPrice, "Unable to perform the transaction. Not enough funds");
+        require(car.price_usd <= usdPayedPrice, "Not enough funds");
 
         //The shop contract need to be approved to transfer the token (Approved after minting calling setForSale)
         require(getApproved(_tokenId) == carMarket, "Shop not approved");
@@ -174,6 +184,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
       
         car.owner = _buyer;
         car.status = CarStatus.SOLD;
+
+        emit CarEvent("Car ownership transfered", fleet[_tokenId]);
     }
 
 
