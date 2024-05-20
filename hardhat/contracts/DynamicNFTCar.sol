@@ -83,10 +83,10 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     function _safeMintWithURI(address to, string memory uri) private onlyRole(MINTER_ROLE) {    
         uint256 tokenId = _nextTokenId;
         _safeMint(to, tokenId);//Need to do -1 because it was incresed already in the mint method
-        _setTokenURI(tokenId, uri);  
+        _setTokenURI(tokenId, uri);          
+        _nextTokenId++;               
 
         emit CarEvent("Minted car", fleet[tokenId]);
-        _nextTokenId++;               
     }
 
     //Updates the data from the API call to the backend EOD
