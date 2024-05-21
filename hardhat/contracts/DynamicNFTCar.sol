@@ -10,7 +10,7 @@ import "./PriceConverter.sol";
 import "./NFTStorage.sol";
     
 
-contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
+contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl, NFTStorage {
  
     modifier onlyCarOwner(uint256 _tokenId) {        
         //Token id validation
@@ -19,10 +19,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         address carOwner =  _ownerOf(_tokenId);
         require(carOwner == _msgSender(), "Not authorized. CarOwner only");
         _;
-    }
-
-    //Events
-    event CarEvent(string action, Car car);    
+    }    
 
     using PriceConverter for uint256;
     using Strings for uint256;   
@@ -32,7 +29,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
 
     //Array of cars
     Car[] public fleet;
-    
+
     constructor(address defaultAdmin) ERC721("Web3Wheels", "W3W") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, defaultAdmin);
