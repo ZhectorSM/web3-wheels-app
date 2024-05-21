@@ -13,9 +13,13 @@ async function main() {
     const [deployer] = await ethers.getSigners();
     const carNft = await ethers.getContractAt("DynamicNFTCar", deployer);
     const carNftContract = carNft.attach(
-        "0x95401dc811bb5740090279Ba06cfA8fcF6113778" // The deployed contract address
+        "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9" // The deployed contract address
     );
     
+    const priceConsumerV3 = await ethers.getContractAt("PriceConsumerV3", deployer);
+    const priceConsumerV3Contract= priceConsumerV3.attach(
+        "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" // The deployed contract address
+    );
 
     /*const priceConverter = await ethers.getContractAt("PriceConsumerV3", deployer);
     const priceConverterContract = priceConverter.attach(
@@ -25,7 +29,7 @@ async function main() {
    
     const market = await ethers.getContractAt("CarMarket", deployer);
     const marketContract = market.attach(
-        "0x998abeb3E57409262aE5b751f60747921B33613E" // The deployed contract address
+        "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9" // The deployed contract address
     );
 
 
@@ -69,8 +73,8 @@ async function main() {
     console.log(updatedCar);
 
     //Last price from feed
-    /*const latestPrice = await priceConverterContract.getLatestPrice(); 
-    console.log("Price is: ", BigInt(latestPrice).toString());*/   
+    const latestPrice = await priceConsumerV3Contract.getLatestPrice(); 
+    console.log("Price is: ", BigInt(latestPrice).toString());
     
    
   } catch (error) {

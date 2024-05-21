@@ -4,15 +4,13 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "./PriceConverter.sol";
+import "./NFTStorage.sol";
+    
 
-
-enum CarStatus { NEW, FOR_SALE, SOLD }
-
-contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
+contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl, NFTStorage {
  
     modifier onlyCarOwner(uint256 _tokenId) {        
         //Token id validation
@@ -21,40 +19,16 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         address carOwner =  _ownerOf(_tokenId);
         require(carOwner == _msgSender(), "Not authorized. CarOwner only");
         _;
-    }
-
-    //Events
-    event CarEvent(string action, Car car);
-
-    //Roles
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    }    
 
     using PriceConverter for uint256;
-    using Strings for uint256;
-    using Strings for uint16;
-    using Strings for uint8;
+    using Strings for uint256;   
 
     //Auto-incrementable counter
-    uint256 private _nextTokenId;
-
-    //Car obj
-    struct Car {
-        address owner;
-        string name;
-        string description;
-        string image;       
-        string vin; //Vehicle identification number      
-        string location;
-        uint256 mileage_km;
-        uint8 reputation;
-        uint256 price_usd;
-        uint256 revenue;
-        uint256 expenses;
-        CarStatus status;
-    }
+    uint256 private _nextTokenId;    
 
     //Array of cars
-    Car[] public fleet;    
+    Car[] public fleet;
 
     constructor(address defaultAdmin) ERC721("Web3Wheels", "W3W") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
@@ -90,7 +64,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     }
 
     //Updates the data from the API call to the backend EOD
-    function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint8 _reputation, uint256 _expenses, uint256 _revenue) public onlyCarOwner(_tokenId) { 
+    function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint256 _reputation, uint256 _expenses, uint256 _revenue) public onlyCarOwner(_tokenId) { 
 
         //Update data
         Car storage car = fleet[_tokenId];
@@ -161,7 +135,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     //Could be moved to the market smart contract?(performing here only safeTransferFrom)
     function buyCar(uint256 _tokenId, address _buyer, uint256 _payedPrice) external payable {
 
-        address carMarket = _msgSender();        
+        address carMarket = _msgSender();
 
         //Token id validation
         require (_tokenId < _nextTokenId, "TokenId does not exist");//It starts at zero
@@ -171,7 +145,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
         //The cars need to be available
         require(car.status == CarStatus.FOR_SALE, "Car not available");
 
-        //Check the amount send is equals o bigger than the car price        
+        //Check the amount send is equals o bigger than the car price
         uint256 usdPayedPrice = _payedPrice.getConversionRate();//Convert ETH to USD        
         require(car.price_usd <= usdPayedPrice, "Not enough funds");
 
