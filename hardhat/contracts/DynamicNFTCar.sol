@@ -22,10 +22,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     }
 
     //Events
-    event CarEvent(string action, Car car);
-
-    //Roles
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    event CarEvent(string action, Car car);    
 
     using PriceConverter for uint256;
     using Strings for uint256;   
@@ -34,8 +31,8 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl {
     uint256 private _nextTokenId;    
 
     //Array of cars
-    Car[] public fleet;    
-
+    Car[] public fleet;
+    
     constructor(address defaultAdmin) ERC721("Web3Wheels", "W3W") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, defaultAdmin);
