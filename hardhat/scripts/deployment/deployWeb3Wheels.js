@@ -31,16 +31,26 @@ async function deployWeb3Wheels(chainId) {
 
 
     //FEED
-    /*const priceConverterFactory = await ethers.getContractFactory("PriceConverter");
-    const priceConverterV3 = await priceConverterFactory.deploy(priceFeedContract);   
-    await priceConverterV3.deploymentTransaction().wait(waitBlockConfirmations);
-    console.log(`ETH/USD Price Consumer deployed to ${priceConverterV3.target} on ${network.name}`)*/
+    const priceConsumerV3Factory = await ethers.getContractFactory("PriceConsumerV3");
+    const priceConsumerV3 = await priceConsumerV3Factory.deploy(priceFeedContract);
+    await priceConsumerV3.deploymentTransaction().wait(waitBlockConfirmations);
+    console.log(`ETH/USD Price Consumer deployed to ${priceConsumerV3.target} on ${network.name}`);
+
+    //Price converter
+    const priceConverterFactory = await ethers.getContractFactory("PriceConverter");
+    const priceConverter = await priceConverterFactory.deploy();
+    await priceConverter.deploymentTransaction().wait(waitBlockConfirmations);
+    console.log(`Price Converter deployed to ${priceConverter.target} on ${network.name}`);
 
 
     //DYNAMIC NFT
     const defaultAdmin = process.env.PUBLIC_ADDRESS;
-
-    const dynamicNftFactory = await ethers.getContractFactory("DynamicNFTCar");
+    const dynamicNftFactory = await ethers.getContractFactory("DynamicNFTCar",{        
+        libraries: {
+            PriceConverter: priceConsumerV3.target
+        }
+    }
+    );
     const dynamicNftContract = await dynamicNftFactory.deploy(defaultAdmin);    
     await dynamicNftContract.deploymentTransaction().wait(waitBlockConfirmations);
     console.log(`Dynamic NFT contract deployed to ${dynamicNftContract.target} on ${network.name}`);
@@ -49,7 +59,7 @@ async function deployWeb3Wheels(chainId) {
     const carMarketFactory = await ethers.getContractFactory("CarMarket");
     const carMarketContract = await carMarketFactory.deploy(dynamicNftContract.target);    
     await carMarketContract.deploymentTransaction().wait(waitBlockConfirmations);
-    console.log(`Dynamic Car Market contract deployed to ${carMarketContract.target} on ${network.name}`);
+    console.log(`Car Market contract deployed to ${carMarketContract.target} on ${network.name}`);
     
 }
 
