@@ -1,4 +1,5 @@
-const { readFile, writeFile, unlink, stat } = require('fs').promises
+const {existsSync} = require('fs');
+const { readFile, writeFile, unlink, access, readdir } = require('fs').promises
 const path = require('path');
 
 const dataPath = 'data'
@@ -11,6 +12,7 @@ const dbReadVehicle = async (vehicleTokenId) => {
         return JSON.parse(data)
     } catch (error) {
         console.error(error)
+        throw(`Error reading file: ${error}`)
     }
 
 }
@@ -28,6 +30,7 @@ const dbReadAllVehicles = async () => {
         return vehicles;
     } catch (error) {
         console.error(`Error reading all vehicles: ${error}`);
+        throw(`Error reading all vehicles: ${error}`);
     }
 }
 
@@ -37,14 +40,15 @@ const dbSaveVehicle = async (vehicleTokenId, data) => {
         const filePath = path.join(__dirname, 'data', 'vehicles', `${vehicleTokenId}.json`);
 
         //check if file exists
-        if (stat(filePath)) {
+        if (existsSync(filePath)) {
            throw(`File ${vehicleTokenId}.json already exists. Please use the update endpoint instead.`);
         }
-
+        console.log(`Writing data ${data} to file ${vehicleTokenId}.json...`);
         await writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
         console.log(`Data has been written to file ${vehicleTokenId}.json successfully.`);
     } catch (error) {
-        console.error(`Error writing file to disk: ${error}`);
+        console.error(`Error writing file to: ${error}`);
+        throw(`Error writing file to: ${error}`);
     }
 }
 
@@ -55,6 +59,7 @@ const dbUpdateVehicle = async (vehicleTokenId, data) => {
         console.log(`Data has been updated in file ${vehicleTokenId}.json successfully.`);
     } catch (error) {
         console.error(`Error updating file: ${error}`);
+        throw(`Error updating file: ${error}`);
     }
 }
 
@@ -66,6 +71,7 @@ const dbDeleteVehicle = async (vehicleTokenId) => {
         console.log(`File ${vehicleTokenId}.json has been deleted successfully.`);
     } catch (error) {
         console.error(`Error deleting file: ${error}`);
+        throw(`Error deleting file: ${error}`);
     }
 }
 
