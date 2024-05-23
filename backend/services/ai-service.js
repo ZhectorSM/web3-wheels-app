@@ -25,6 +25,16 @@ const connectAIService = async () => {
   }
 };
 
+const moveVehicle = async (vehicle) => {
+  try {
+    const response = await axios.post(`http://${HOST}:${PORT}/path/to/api`, data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error: ${error}`);
+    throw error;
+  }
+}
+
 module.exports = {
   getDestinationsForVehicles,
   connectAIService

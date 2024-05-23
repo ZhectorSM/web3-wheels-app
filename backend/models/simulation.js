@@ -7,6 +7,7 @@ class Simulation {
         this.passengers = []
         this.isSetUp = false
         this.interval = null
+        this.graph = null
     }
 
     async setup() {
@@ -49,6 +50,30 @@ class Simulation {
             clearInterval(this.interval);
             console.log('Simulation stopped');
         }
+    }
+
+    async addVehicle(data) {
+        const vehicle = new Vehicle(data);
+        this.vehicles.push(vehicle);
+        return vehicle;
+    }
+
+    async addPassenger(data) {
+        const passenger = new Passenger(data);
+        this.passengers.push(passenger);
+        return passenger;
+    }
+
+
+    async calculateTheRidePrice(passengerId){
+        const passenger = this.passengers.find(p => p.passengerId === passengerId);
+        const distance = this.calculateDistance(passenger.pickup, passenger.dropoff);
+        const price = distance * 1.5;
+        return price;
+    }
+
+    calculateDistance(pickupPos, dropoffPos) {
+        
     }
 
     async actionDropOffPassenger(vehicleId) {
