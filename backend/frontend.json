@@ -1,0 +1,18 @@
+[
+    {
+        vehicleId : 1,
+        "position" : {
+            "x" : 0, // check altitute and longitude
+            "y" : 0
+        },
+    },
+    {
+        vehicleId : 2,
+        "position" : {
+            "x" : 0,
+            "y" : 0
+        },
+    }
+]
+
+ 
