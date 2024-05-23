@@ -17,6 +17,10 @@ app.use(express.json())
 app.use('/vehicles', vehicles)
 app.use('/passengers', passengers)
 
+//home call when service is up
+app.get('/', (req, res) => {  
+  res.send('Web3Wheels');
+});
 
 const start = async () => {
   try {
