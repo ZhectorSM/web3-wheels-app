@@ -54,6 +54,7 @@ class Simulation {
 
     async addVehicle(data) {
         const vehicle = new Vehicle(data);
+        
         this.vehicles.push(vehicle);
         return vehicle;
     }

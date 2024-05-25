@@ -22,7 +22,7 @@ app.use('/passengers', passengers)
 const start = async () => {
   try {
     console.log('Connecting to AI service...');
-    //await connectAIService();
+    await connectAIService();
     await simulation.setup();
     simulation.start()
     app.listen(port, hostname,() =>
