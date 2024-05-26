@@ -8,8 +8,8 @@
   "location": "3.80,-12.645",
   "mileage_km": 25000,
   "reputation": 7,
-  "price_usd": 53000,
-  "revenue": 48,
+  "price_usd": 53000,  
   "expenses": 12,
-  "data": [2, 25000, 7, 53000, 48, 12]
+  "revenue": 48,
+  "data": [2, 25000, 7, 53000, 12, 48]
 }
