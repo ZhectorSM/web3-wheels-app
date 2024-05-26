@@ -9,7 +9,7 @@
   "mileage_km": 60000,
   "reputation": 5,
   "price_usd": 40000,
-  "revenue": 100,
   "expenses": 40,
-  "data": [0, 60000, 5, 40000, 100, 40]
+  "revenue": 100,  
+  "data": [0, 60000, 5, 40000, 40, 100]
 }
