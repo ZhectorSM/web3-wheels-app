@@ -10,5 +10,6 @@
   "reputation": 7,
   "price_usd": 53000,
   "revenue": 48,
-  "expenses": 12
+  "expenses": 12,
+  "data": [2, 25000, 7, 53000, 48, 12]
 }
