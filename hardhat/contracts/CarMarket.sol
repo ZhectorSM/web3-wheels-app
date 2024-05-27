@@ -16,7 +16,7 @@ contract CarMarket {
 
     NftCarInterface public carInterface;
 
-    constructor(address _NftCarAddress){        
+    constructor(address _NftCarAddress){
           carInterface = NftCarInterface(_NftCarAddress);
     }
    
