@@ -1,20 +1,18 @@
 const express = require('express')
-const {addVehicle, addPassenger, getVehiclesPosition, getSimInfo} = require ('../controllers/simulation-controller')
+const { addVehicle, addPassenger, getVehiclesPosition, getSimInfo } = require('../controllers/simulation-controller')
 
 
-const router = express.router()
+const simulationRouter = express.Router()
 
-router.route('/').get(getSimInfo)
+simulationRouter.route('/')
+    .get(getSimInfo)
 
-router.route('/vehicles/')
+simulationRouter.route('/vehicles')
     .get(getVehiclesPosition)
     .post(addVehicle)
-    .delete()
 
-router.route('/vehicles/:id')
-    .get()
-    .
+simulationRouter.route('/passengers')
+    .post(addPassenger)
 
 
-router.route()
-router.route()
+module.exports = simulationRouter

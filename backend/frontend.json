@@ -1,18 +1,16 @@
 [
     {
-        vehicleId : 1,
+        "vehicleId" : 1,
         "position" : {
-            "x" : 0, // check altitute and longitude
-            "y" : 0
-        },
+            "latitude" : 0,
+            "longitude" : 0
+        }
     },
     {
-        vehicleId : 2,
+        "vehicleId" : 2,
         "position" : {
-            "x" : 0,
-            "y" : 0
-        },
+            "latitude" : 0,
+            "longitude" : 0
+        }
     }
 ]
-
- 

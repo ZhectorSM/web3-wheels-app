@@ -9,6 +9,7 @@ const getVehicleAttributes = (req, res) => {
         .catch(error => {
             res.status(500).json({ error: error })
         })
+        res.end()
 }
 
 const getAllVehiclesAttributes = (req, res) => {
@@ -23,8 +24,8 @@ const getAllVehiclesAttributes = (req, res) => {
 }
 
 const createVehicle = (req, res) => {
-    const { id } = req.params;
     const data = req.body;
+    const id = data.tokenId 
     dbSaveVehicle(id, data)
         .then(() => {
             res.status(201).json({ message: 'Vehicle has been created successfully.' })

@@ -17,10 +17,10 @@ class Simulation {
 
             database.dbReadAllVehicles()
                 .then(vehicles => {
-                    console.log('Loaded vehicles:', vehicles);
                     this.vehicles = vehicles.map(vehicle => new Vehicle(vehicle));
                 });
-            aiService.connectAIService()
+            await aiService.connectAIService()
+            this.isSetUp = true;
         } catch (err) {
             console.error('Error setting up Simulation: ', err);
             throw err;
@@ -54,7 +54,7 @@ class Simulation {
         // For example, you could update vehicle locations, calculate new mileage, etc.
         this.vehicles.forEach(vehicle => {
             // Example update logic (just for demonstration purposes):
-            console.log(`Vehicle ${vehicle.name} at location ${vehicle.position.latitude}, ${vehicle.position.longitude}`);
+            //console.log(`Vehicle ${vehicle.name} at location ${vehicle.position.latitude}, ${vehicle.position.longitude}`);
             // Update vehicle properties here as needed
         });
     }
@@ -69,13 +69,20 @@ class Simulation {
     }
 
     async addVehicle(data) {
-        const vehicle = new Vehicle(data);
-        await aiService.getClosestNodeId(vehicle.vehicleId, vehicle.position)
+        try{
+            const vehicle = new Vehicle(data);
+            await aiService.getClosestNodeId(vehicle.vehicleId, vehicle.position)
             .then(position => {
                 vehicle.position = position
             })
-        this.vehicles.push(vehicle);
-        return vehicle;
+            this.vehicles.push(vehicle);
+            return vehicle;
+        }
+        catch(err){
+            console.error('Error adding vehicle: ', err);
+            throw ('Error adding vehicle: ', err)
+        }
+        
     }
 
     async addPassenger(data) {
@@ -94,7 +101,7 @@ class Simulation {
         return passenger;
     }
 
-    calculateFactor = (vehicles, passengers) {
+    calculateFactor(vehicles, passengers) {
         let availableVehicles = vehicles.filter(vehicle => vehicle.status === VehicleStatus.IDLE).length;
         let waitingPassengers = passengers.length; // Assuming all passengers are waiting
     
@@ -208,4 +215,4 @@ class Simulation {
 
 const simulation = new Simulation();
 
-module.exports = { simulation };
+module.exports = simulation
