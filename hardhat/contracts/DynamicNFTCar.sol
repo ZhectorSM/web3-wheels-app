@@ -12,7 +12,7 @@ import "./NFTStorage.sol";
 
 contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl, NFTStorage {
  
-    modifier onlyCarOwner(uint256 _tokenId) {        
+    modifier onlyCarOwner(uint256 _tokenId) {
         //Token id validation
         require (_tokenId < _nextTokenId, "TokenId does not exist");//It starts at zero
         //Owner validation
@@ -33,6 +33,7 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl, NFTStorage {
     constructor(address defaultAdmin) ERC721("Web3Wheels", "W3W") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, defaultAdmin);
+        _grantRole(CONSUMER_ROLE, defaultAdmin);
     }
    
     //Address of the NFT owner, initial URI
@@ -64,14 +65,14 @@ contract DynamicNFTCar is ERC721, ERC721URIStorage, AccessControl, NFTStorage {
     }
 
     //Updates the data from the API call to the backend EOD
-    function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint256 _reputation, uint256 _expenses, uint256 _revenue) public onlyCarOwner(_tokenId) { 
+    function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint256 _reputation, uint256 _expenses, uint256 _revenue) public { 
 
         //Update data
         Car storage car = fleet[_tokenId];
         car.mileage_km = _mileage_km;
         car.reputation = _reputation;
-        car.expenses += _expenses;
-        car.revenue += _revenue;
+        car.expenses = _expenses;
+        car.revenue = _revenue;
 
         string memory uri = _createTokenURI(car);
         _setTokenURI(_tokenId, uri);
