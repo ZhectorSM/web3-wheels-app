@@ -32,7 +32,7 @@ const connectAIService = async () => {
 /**
  * 
  * @param {} vehicleId eg. vehicleId = 1
- * @param {} position eg. position = {longitude : 12, altitude : 13}
+ * @param {} position eg. position = {longitude : 12, latitude : 13}
  * @returns "{
             "vehicle_id": 1,
             "position": {
@@ -50,7 +50,7 @@ const getClosestNodeId = async (vehicle_id, position) =>{
       position
     }
     const response = await axios.get(`http://${HOST}:${PORT}${API_FIND_CLOSEST_NODE_ID}`, data)
-    return response.data
+    return response.data.position
   }catch(error){
     console.error(`Error getting closest node id from AI service: ${error}`);
     throw error

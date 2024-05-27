@@ -15,8 +15,9 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 
-app.use('/vehicles', vehicles)
-app.use('/passengers', passengers)
+app.use('/db/vehicles', vehicles)
+app.use('/sim', )
+app.use('//passengers', passengers)
 
 
 const start = async () => {

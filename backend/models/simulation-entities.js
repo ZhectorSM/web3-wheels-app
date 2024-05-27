@@ -13,6 +13,10 @@ const VehicleStatus = Object.freeze({
     CARRYING_PASSENGER: 'carrying passenger'
 });
 
+const VehicleOperatingMode = Object.freeze({
+    //TODO add modes, check with Mihir. 
+})
+
 class Vehicle {
     constructor(data) {
         console.log('Creating vehicle:', data);
@@ -22,11 +26,15 @@ class Vehicle {
         this.description = data.description;
         this.image = data.image;
         this.vin = data.vin;
-        this.position = {
-            nodeId : -1,
-            latitude: parseFloat(data.location.split(',')[0]),
-            longitude: parseFloat(data.location.split(',')[1]),
-        };
+        if(data.position){
+            this.position = data.position
+        }else{
+            this.position = {
+                nodeId : -1,
+                latitude: parseFloat(data.location.split(',')[0]),
+                longitude: parseFloat(data.location.split(',')[1]),
+            };
+        }
         this.mileage_km = data.mileage_km;
         this.reputation = data.reputation;
         this.price_usd = data.price_usd;
