@@ -12,21 +12,31 @@ class Simulation {
         this.graph = null
     }
 
+    /**
+     * Sets up the simulation by connecting to the AI service, reading all vehicles from the database,
+     * and adding them to the simulation.
+     * @throws {Error} If there is an error setting up the simulation.
+     */
     async setup() {
         try {
-
-            database.dbReadAllVehicles()
-                .then(vehicles => {
-                    this.vehicles = vehicles.map(vehicle => new Vehicle(vehicle));
-                });
             await aiService.connectAIService()
-            this.isSetUp = true;
+            await database.dbReadAllVehicles()
+                .then(vehicles => {
+                    vehicles.forEach(vehicle =>
+                        this.addVehicle(vehicle)
+                            .catch(err => console.error('Error adding vehicle: ', err)))
+                });
+            this.isSetUp = true
         } catch (err) {
             console.error('Error setting up Simulation: ', err);
             throw err;
         }
     }
 
+    /**
+     * Starts the simulation.
+     * @throws {Error} If the simulation is not set up. Call setup() first.
+     */
     start() {
         if (!this.isSetUp) {
             throw new Error("Simulation not set up. Please call setup() first.")
@@ -34,183 +44,246 @@ class Simulation {
         console.log('Simulation started');
         this.iterationInterval = setInterval(() => {
             this.updateSimulation();
-        }, 10000); // runs every 1 second
+        }, 100); // runs every 1 second
 
         this.databaseUpdateInterval = setInterval(() => {
             this.updateDatabase()
-        }, 1000000)
+        }, 1000)
     }
 
-    updateDatabase(){
+    /**
+     * Updates the database with the current state of the vehicles.
+     * @returns {Promise<void>} A promise that resolves when the database update is complete.
+     */
+    async updateDatabase() {
         console.log("Updating database ...")
         this.vehicles.forEach(vehicle => {
-            database.dbUpdateVehicle
+            database.dbUpdateVehicle(vehicle.tokenId, vehicle)
+                .catch(err => console.error('Error updating vehicle in database: ', err))
+
         })
     }
 
-    updateSimulation() {
+   
+    /**
+     * Updates the simulation environment.
+     * This method is responsible for updating the simulation environment, such as vehicle locations, mileage, etc.
+     * It performs the following steps:
+     * 1. Finds mock destinations for vehicles in idle.
+     * 2. Moves assigned vehicles towards pick-up locations.
+     * 3. Moves passenger-carrying vehicles towards drop-off locations.
+     */
+    async updateSimulation() {
         console.log('Updating simulation...');
         // Add logic to update the simulation environment here
         // For example, you could update vehicle locations, calculate new mileage, etc.
-        this.vehicles.forEach(vehicle => {
-            // Example update logic (just for demonstration purposes):
-            //console.log(`Vehicle ${vehicle.name} at location ${vehicle.position.latitude}, ${vehicle.position.longitude}`);
-            // Update vehicle properties here as needed
-        });
+        this.findMockDestinationsForVehiclesInIdle()
+        this.moveAssignedVehiclesTowardsPickUpLocations()
+        this.movePassengerCarryingVehiclesTowardsDropOffLocations()
     }
-    clearIntervals() {
 
-    }
+    /**
+     * Stops the simulation by clearing the iteration and database update intervals.
+     * @returns {void}
+     */
     stop() {
-        if (this.iterationInterval) {
-            clearInterval();
-            console.log('Simulation stopped');
-        }
+        clearInterval(this.iterationInterval);
+        clearInterval(this.databaseUpdateInterval);
+        console.log('Simulation stopped');
     }
 
+    /**
+     * Adds a new vehicle to the simulation.
+     * @param {Object} data - The data of the vehicle to be added.
+     * @param {number} data.tokenId - The token ID of the vehicle.
+     * @param {Object} data.position - The position of the vehicle.
+     * @returns {Promise<Vehicle>} - A promise that resolves with the added vehicle.
+     * @throws {Error} - If the vehicle's tokenId is missing or already exists.
+     */
     async addVehicle(data) {
-        try{
+        try {
+            if (!data.tokenId && data.tokenId !== 0) throw new Error('Vehicle tokenId is required')
+            if (this.vehicles.find(vehicle => vehicle.tokenId === data.tokenId)) throw new Error('Vehicle already exists')
             const vehicle = new Vehicle(data);
-            await aiService.getClosestNodeId(vehicle.vehicleId, vehicle.position)
-            .then(position => {
-                vehicle.position = position
-            })
+            await aiService.getClosestNodeId(vehicle.tokenId, vehicle.position)
+                .then(position => {
+                    vehicle.position = position
+                })
             this.vehicles.push(vehicle);
+            this.updateDatabase()
             return vehicle;
         }
-        catch(err){
+        catch (err) {
             console.error('Error adding vehicle: ', err);
-            throw ('Error adding vehicle: ', err)
+            throw err
         }
-        
+
     }
 
+    /**
+     * Adds a new passenger to the simulation.
+     * 
+     * @param {Object} data - The data of the passenger to be added.
+     * @returns {Promise<Object>} - A promise that resolves to the added passenger.
+     * @throws {Error} - If there is an error while adding the passenger.
+     */
     async addPassenger(data) {
-        const passenger = new Passenger(data);
-        await aiService.getClosestNodeId(passenger.passengerId, passenger.pickup)
-            .then(pickupPosition => {
-                passenger.pickup = position
-            })
-        await aiService.getClosestNodeId(passenger.passengerId, passenger.dropoff)
-            .then(dropoffPosition => {
-                passenger.dropoff = dropoffPosition
-            })
-        await this.calculateTheRidePrice(passenge.passengerId)
-            .then(price => passenger.ridePrice = price )
-        this.passengers.push(passenger);
-        return passenger;
+        try {
+            const passenger = new Passenger(data);
+            await aiService.getClosestNodeId(passenger.passengerId, passenger.pickup.position)
+                .then(pickupPosition => {
+                    console.log('pickupPosition', pickupPosition)
+                    passenger.pickup = pickupPosition
+                })
+            await aiService.getClosestNodeId(passenger.passengerId, passenger.dropoff.position)
+                .then(dropoffPosition => {
+                    console.log('dropoffPosition', dropoffPosition)
+                    passenger.dropoff = dropoffPosition
+                })
+            await aiService.findRoute(passenger.passengerId, passenger.pickup.node_id, passenger.dropoff.node_id)
+            await this.calculateTheRidePrice(passenger)
+                .then(price => { passenger.ridePrice = price })
+            this.passengers.push(passenger);
+            return passenger;
+        } catch (err) {
+            throw err
+        }
     }
 
-    calculateFactor(vehicles, passengers) {
-        let availableVehicles = vehicles.filter(vehicle => vehicle.status === VehicleStatus.IDLE).length;
-        let waitingPassengers = passengers.length; // Assuming all passengers are waiting
-    
+    /**
+     * Calculates the factor based on the number of available vehicles and passengers.
+     * If there are more passengers than vehicles, the factor will be greater than 1, increasing the ride distance.
+     * If there are more vehicles than passengers, the factor will be less than 1, decreasing the ride distance.
+     * 
+     * @returns {number} The calculated factor.
+     */
+    calculateFactor() {
+        let availableVehicles = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.IDLE).length;
+        let waitingPassengers = this.passengers.filter(passenger => passenger.status === PassengerStatus.IDLE).length; // Assuming all passengers are waiting
+
         // Calculate the factor based on the number of available vehicles and passengers
         // If there are more passengers than vehicles, the factor will be greater than 1, increasing the ride distance
         // If there are more vehicles than passengers, the factor will be less than 1, decreasing the ride distance
         let factor = waitingPassengers / (availableVehicles || 1);
-    
+
         return factor;
     }
 
-    async calculateTheRidePrice(passengerId){
-        const passenger = this.passengers.find(p => p.passengerId === passengerId);
-        await aiService.calculateDistanceBasedPrice()
-        const price = distance * 1.5 * this.calculateFactor();
-        return price;
+    /**
+     * Calculates the price of a ride for a given passenger.
+     * @param {Object} passenger - The passenger object containing passengerId, pickup, and dropoff information.
+     * @returns {Promise<number>} The calculated ride price.
+     */
+    async calculateTheRidePrice(passenger) {
+        console.log('passenger', passenger)
+        await aiService.calculateDistanceBasedPrice(passenger.passengerId, passenger.pickup.node_id, passenger.dropoff.node_id)
+            .then(distance => {
+                return (distance * 1.5 * this.calculateFactor()) + 3.0;
+
+            })
     }
 
-    async actionDropOffPassenger(vehicleId) {
-        const vehicle = this.vehicles.find(v => v.tokenId === vehicleId);
-        if (this.canDropOff(vehicleId)) {
-            this.dropOffPassenger(vehicleId);
+    /**
+     * Finds mock destinations for vehicles that are in idle status.
+     * @returns {Promise<void>} A promise that resolves when the mock destinations are found and assigned to the vehicles.
+     */
+    async findMockDestinationsForVehiclesInIdle() {
+        let idleVehiclesNodeIds = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.IDLE).map(vehicle => vehicle.position.node_id);
+        let idlePassengersNodeIds = this.passengers.filter(passenger => passenger.status === PassengerStatus.IDLE).map(passenger => passenger.pickup.node_id);
+        aiService.getMockDestinationsForVehicles(idleVehiclesNodeIds, idlePassengersNodeIds)
+            .then(matches => {
+                matches.forEach(match => {
+                    let vehicle = this.vehicles.find(vehicle => vehicle.position.node_id === match.vehicle_node_id);
+                    let passenger = this.passengers.find(passenger => passenger.pickup.node_id === match.destination_node_id);
+                    this.assignPassengerToVehicle(passenger, vehicle)
 
+                })
+            })
+    }
+
+    /**
+     * Assigns a passenger to a vehicle and finds the route for the vehicle to pick up the passenger.
+     * 
+     * @param {Passenger} passenger - The passenger to be assigned to the vehicle.
+     * @param {Vehicle} vehicle - The vehicle to assign the passenger to.
+     * @returns {Promise<void>} - A promise that resolves when the passenger is assigned to the vehicle and the route is found.
+     */
+    async assignPassengerToVehicle(passenger, vehicle) {
+        await aiService.findRoute(vehicle.tokenId, vehicle.position.node_id, passenger.pickup.node_id)
+            .then(route => {
+                vehicle.route = route
+                passenger.status = PassengerStatus.ASSIGNED
+                vehicle.currentPassenger = passenger;
+                vehicle.status = VehicleStatus.ASSIGNED
+            })
+            .catch(err => console.error('Error finding route for vehicle and passenger: ', err))
+    }
+
+    /**
+     * Moves assigned vehicles towards pick-up locations.
+     * 
+     * @returns {Promise<void>} A promise that resolves when all vehicles have been moved.
+     */
+    async moveAssignedVehiclesTowardsPickUpLocations() {
+        let assignedVehicles = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.ASSIGNED);
+        assignedVehicles.forEach(async vehicle => {
+            let nextNode = vehicle.route.shift();
+            if (!nextNode) {
+                vehicle.status = VehicleStatus.CARRYING_PASSENGER;
+                vehicle.currentPassenger.status = PassengerStatus.IN_TRANSIT;
+                await aiService.findRoute(vehicle.tokenId, vehicle.position.node_id, vehicle.currentPassenger.dropoff.node_id)
+                .then(route => {
+                    vehicle.route = route
+                })
+                .catch(err => console.error('Error finding route for vehicle and passenger: ', err))
+                return;
+            }
+            aiService.moveVehicle(vehicle.tokenId, nextNode)
+                .then(position => {
+                    vehicle.position = position
+                    vehicle.mileage_km += 0.1
+                    
+                })
+                .catch(err => console.error('Error moving vehicle: ', err))
+        })
+    }
+
+    /**
+     * Moves the passenger-carrying vehicles towards their drop-off locations.
+     * @returns {Promise<void>} A promise that resolves when all vehicles have been moved.
+     */
+    async movePassengerCarryingVehiclesTowardsDropOffLocations() {
+        let carryingPassengerVehicles = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.CARRYING_PASSENGER);
+        carryingPassengerVehicles.forEach(async vehicle => {
+            let nextNode = vehicle.route.shift();
+            if (!nextNode) {
+                vehicle.status = VehicleStatus.IDLE;
+                vehicle.currentPassenger.status = PassengerStatus.DROPPED_OFF;
+                vehicle.reputation += 1
+                vehicle.revenue += vehicle.currentPassenger.ridePrice
+                this.passengers.remove(vehicle.currentPassenger)
+                vehicle.currentPassenger = null
+                return;
+            }
+            aiService.moveVehicle(vehicle.tokenId, nextNode)
+                .then(position => {
+                    vehicle.position = position
+                    vehicle.mileage_km += 0.1
+               
+                    
+                })
+                .catch(err => console.error('Error moving vehicle: ', err))
+        })
+    
+    }
+
+    getSimInfo() {
+        return {
+            vehicles: this.vehicles,
+            passengers: this.passengers
         }
     }
 
-    async actionAssignPassenger(vehicleId, passengerId) {
-        if (this.canAssignPassenger(vehicleId, passengerId)) {
-            this.assignPassenger(vehicleId, passengerId);
-        }
-    }
-
-    async actionPickUpPassenger(vehicleId) {
-        if (this.canPickUpPassenger(vehicleId)) {
-            this.pickUpPassenger(vehicleId);
-        }
-    }
-
-    canAssignPassenger(vehicleId, passengerId) {
-        const vehicle = this.vehicles.find(v => v.tokenId === vehicleId);
-        const passenger = this.passengers.find(p => p.passengerId === passengerId);
-        if (vehicle && passenger && vehicle.status === VehicleStatus.IDLE && passenger.status === PassengerStatus.WAITING) {
-            console.log(`Vehicle ${vehicle.name} can be assigned passenger ${passenger.name}`);
-            return true;
-        } else {
-            console.log('Vehicle cannot be assigned passenger');
-            return false;
-        }
-    }
-
-    dropOffPassenger(vehicleId) {
-        const vehicle = this.vehicles.find(v => v.tokenId === vehicleId);
-        const passenger = this.passengers.find(p => p.passengerId === vehicle.currentPassenger.passengerId);
-        vehicle.status = VehicleStatus.IDLE;
-        vehicle.currentPassenger.status = PassengerStatus.DROPPED_OFF;
-        vehicle.currentPassenger = null;
-        vehicle.destination = null;
-        this.passengers.remove(passenger);
-        //TODO update the money after ride is ended
-        console.log(`Vehicle ${vehicle.name} has dropped off passenger ${passenger.name}`);
-    }
-    assignPassenger(vehicleId, passengerId) {
-        const vehicle = this.vehicles.find(v => v.tokenId === vehicleId);
-        const passenger = this.passengers.find(p => p.passengerId === passengerId);
-        vehicle.status = VehicleStatus.ASSIGNED;
-        vehicle.currentPassenger = passenger;
-        passenger.status = PassengerStatus.ASSIGNED;
-        vehicle.destination = passenger.pickup;
-
-    }
-
-    canDropOff(vehicleId) {
-        const vehicle = this.vehicles.find(v => v.tokenId === vehicleId);
-        if (vehicle &&
-            vehicle.passenger &&
-            vehicle.status === VehicleStatus.CARRYING_PASSENGER &&
-            vehicle.currentPassenger.status === PassengerStatus.IN_TRANSIT &&
-            vehicle.destination.latitude === vehicle.position.latitude &&
-            vehicle.destination.longitude === vehicle.position.longitude) {
-
-            return true;
-        }
-        console.log('Vehicle cannot drop off passenger');
-        return false;
-    }
-
-    canPickUpPassenger(vehicleId) {
-        const vehicle = this.vehicles.find(v => v.tokenId === vehicleId);
-        if (vehicle &&
-            vehicle.currentPassenger &&
-            vehicle.status === VehicleStatus.ASSIGNED &&
-            vehicle.currentPassenger.status === PassengerStatus.ASSIGNED &&
-            vehicle.currentPassenger.pickup.latitude === vehicle.position.latitude &&
-            vehicle.currentPassenger.pickup.longitude === vehicle.position.longitude) {
-            console.log(`Vehicle ${vehicle.name} can pick up passenger ${vehicle.currentPassenger.name}`);
-            return true;
-        } else {
-            console.log('Vehicle cannot pick up passenger');
-            return false;
-        }
-    }
-
-    pickUpPassenger(vehicleId) {
-        const vehicle = this.vehicles.find(v => v.tokenId === vehicleId);
-        const passenger = this.passengers.find(p => p.passengerId === vehicle.currentPassenger.passengerId);
-        vehicle.status = VehicleStatus.CARRYING_PASSENGER;
-        vehicle.currentPassenger.status = PassengerStatus.IN_TRANSIT;
-        vehicle.destination = vehicle.currentPassenger.dropoff;
-    }
 }
 
 const simulation = new Simulation();

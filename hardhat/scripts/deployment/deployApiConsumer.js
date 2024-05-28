@@ -22,7 +22,7 @@ async function deployApiConsumer(chainId) {
         const mockOracleFactory = await ethers.getContractFactory("MockOracle");
         mockOracle = await mockOracleFactory.connect(deployer).deploy(linkToken);
         
-        linkTokenContract = linkToken.target;//We can send teh contract itself or the address only
+        linkTokenContract = linkToken.target;//We can send the contract itself or the address only
         oracleContract = mockOracle.target;
        
     } else {
@@ -60,7 +60,7 @@ async function deployApiConsumer(chainId) {
     const fundAmount = networkConfig[chainId]["fundAmount"];
     await linkToken.transfer(apiConsumer, fundAmount);
 
-    console.log(`APIConsumer funded with ${fundAmount} JUELS`);
+    console.log(`APIConsumer funded with ${fundAmount} JUELS`);    
 }
 
 module.exports = {

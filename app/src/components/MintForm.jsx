@@ -1,25 +1,28 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue
+// } from "@/components/ui/select";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 
 export default function MintForm({
   onNameChange,
-  onSizeChange,
+  // onSizeChange,
   onPriceChange,
   onFileChange,
-  onMileageChange,
   onLocationChange,
   onVinChange,
   onSubmit,
-  location
+  location,
+  mintLoading,
+  onDescriptionChange,
+  mintError,
+  garageAddress,
 }) {
         const [loc, setLoc] = useState(location);
 
@@ -40,7 +43,7 @@ export default function MintForm({
   return (
     <div className="relative flex-col items-start gap-8 md:flex w-96 min-w-96">
       <form className="grid w-full items-start gap-6" onSubmit={onSubmit}>
-        <fieldset className="grid gap-6 rounded-lg border-2 p-4">
+        <fieldset className="grid gap-4 rounded-lg border-2 p-4">
           <legend className="-ml-1 px-1 text-sm font-medium">
             Car Details
           </legend>
@@ -49,11 +52,20 @@ export default function MintForm({
             <Input
               id="name"
               type="text"
-              placeholder="Tesla Model S"
+              placeholder="Texla Model Z"
               onChange={(e) => onNameChange(e)}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              type="text"
+              placeholder=""
+              onChange={(e) => onDescriptionChange(e)}
+            />
+          </div>
+          {/* <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-3">
               <Label htmlFor="size">Size</Label>
               <Select onValueChange={onSizeChange}>
@@ -113,21 +125,20 @@ export default function MintForm({
               <Label htmlFor="mileage">Mileage</Label>
               <Input
                 id="mileage"
-                min="1"
+                min="0"
                 type="number"
-                placeholder="Km/ltr"
+                placeholder="Km"
                 onChange={(e) => onMileageChange(e)}
               />
             </div>
-          </div>
+          </div> */}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-3">
               <Label htmlFor="vin">Vehicle Identification Number(VIN)</Label>
               <Input
                 id="vin"
-                min="1000"
-                type="number"
+                type="text"
                 placeholder="XXXXX"
                 onChange={(e) => onVinChange(e)}
               />
@@ -147,39 +158,49 @@ export default function MintForm({
             <legend className="-ml-1 px-1 text-sm font-medium">
               Garage Location
             </legend>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-3">
-                <Label htmlFor="latitude">Latitude</Label>
-                <Input
-                  id="latitude"
-                  type="number"
-                  placeholder="0.0"
-                  step="0.0001"
-                  onChange={handleLatChange}
-                  value={loc[0]}
-                />
+            <div className="flex flex-col gap-1">
+              <div className="grid grid-cols-2 row-span-2 gap-2">
+                <div className="grid gap-0">
+                  <Label htmlFor="latitude">Latitude</Label>
+                  <Input
+                    id="latitude"
+                    type="number"
+                    placeholder="0.0"
+                    step="0.0001"
+                    onChange={handleLatChange}
+                    value={loc[0]}
+                  />
+                </div>
+                <div className="grid gap-0">
+                  <Label htmlFor="longitude">Longitude</Label>
+                  <Input
+                    id="longitude"
+                    type="number"
+                    placeholder="0.0"
+                    step="0.0001"
+                    onChange={handleLngChange}
+                    value={loc[1]}
+                  />
+                </div>
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="longitude">Longitude</Label>
-                <Input
-                  id="longitude"
-                  type="number"
-                  placeholder="0.0"
-                  step="0.0001"
-                  onChange={handleLngChange}
-                  value={loc[1]}
-                />
-              </div>
+              <p className="text-sm font-light">
+                <span className="font-medium">Address:</span> {garageAddress}
+              </p>
             </div>
           </fieldset>
           <div className="grid gap-3">
             <Label htmlFor="image">Car Image</Label>
             <Input id="image" type="file" onChange={(e) => onFileChange(e)} />
           </div>
+          <div className="grid ">
+            <p className="font-medium text-sm text-red-600">
+              {mintError && "There was some error"}
+            </p>
+            <Button onClick={onSubmit}>
+              {mintLoading ? "Minting..." : "Mint"}
+            </Button>
+          </div>
         </fieldset>
-        <div className="grid gap-3">
-          <Button onClick={onSubmit}>Mint</Button>
-        </div>
       </form>
     </div>
   );

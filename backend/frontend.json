@@ -1,16 +1,19 @@
 [
     {
         "vehicleId" : 1,
+        "name" : "Vehicle 1",
+        "reputation": 5,
+        "vin" : "1M8GDM9AXKP042788",
         "position" : {
-            "latitude" : 0,
-            "longitude" : 0
+            "longitude" : 0,
+            "latitude" : 0
         }
     },
     {
         "vehicleId" : 2,
         "position" : {
-            "latitude" : 0,
-            "longitude" : 0
+            "longitude" : 0,
+            "latitude" : 0
         }
     }
 ]

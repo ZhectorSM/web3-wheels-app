@@ -16,10 +16,15 @@ app.use(express.json())
 app.use('/db', databaseRouter)
 app.use('/sim', simulationRouter)
 
+//home call when service is up
+app.get('/', (req, res) => {  
+  res.send('Web3Wheels');
+  //get path to this route
+  console.log(req.originalUrl);
+});
 
 const start = async () => {
   try {
-    console.log('Connecting to AI service...');
     await simulation.setup()
       .then(() => { simulation.start() })
 
@@ -27,7 +32,7 @@ const start = async () => {
       console.log(`Server is listening on port ${port}...`)
     );
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
 };
 
