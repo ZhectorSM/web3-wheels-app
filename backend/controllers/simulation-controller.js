@@ -2,82 +2,71 @@ const simulation = require('../models/simulation')
 const { Vehicle, Passenger, VehicleStatus, PassengerStatus } = require('../models/simulation-entities')
 
 /**
- * POST localhost:5000/sim/vehicles
+ * @api {post} localhost:5000/sim/vehicles Add New Vehicle
+ * @apiName AddNewVehicle
+ * @apiGroup Simulation
  * 
- * This endpoint creates a new vehicle in the simulation.
- * The details of the new vehicle are provided in the request body.
+ * @apiDescription This endpoint is used to add a new vehicle to the simulation.
  * 
- * @example 
- * Request: POST localhost:5000/sim/vehicles
- * Request Body:
+ * @apiParamExample {json} Request-Example:
  * {
-    "tokenId": 4,
-    "owner": "NftCar4",
-    "name": "Mircidis",
-    "description": "Autonomous vehicle",
-    "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
-    "vin": "LM4AC113061sdas105688",
-    "location": "-73123.995018,40.73312986",
-    "mileage_km": 60000,
-    "reputation": 5,
-    "price_usd": 40000,
-    "expenses": 40,
-    "revenue": 100,
-    "data": [
-        0,
-        60000,
-        5,
-        40000,
-        40,
-        100
-    ]
-}
- * Response:
-{
-    "message": "Vehicle has been created successfully.",
-    "vehicle": {
-        "tokenId": 4,
-        "owner": "NftCar4",
-        "name": "Mircidis",
-        "description": "Autonomous vehicle",
-        "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
-        "vin": "LM4AC113061sdas105688",
-        "location": "-73.9739026,40.7571447",
-        "mileage_km": 60000,
-        "reputation": 5,
-        "price_usd": 40000,
-        "expenses": 40,
-        "revenue": 100,
-        "data": [
-            4,
-            60000,
-            5,
-            40000,
-            40,
-            100
-        ]
-    }
-}
+ *    "tokenId": 4,
+ *    "owner": "NftCar4",
+ *    "name": "Mircidis",
+ *    "description": "Autonomous vehicle",
+ *    "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
+ *    "vin": "LM4AC113061sdas105688",
+ *    "location": "-73123.995018,40.73312986",
+ *    "mileage_km": 60000,
+ *    "reputation": 5,
+ *    "price_usd": 40000,
+ *    "expenses": 40,
+ *    "revenue": 100,
+ *    "data": [
+ *        0,
+ *        60000,
+ *        5,
+ *        40000,
+ *        40,
+ *        100
+ *    ]
+ * }
  * 
- * @param {Object} req - The Express request object.
- * @param {Object} req.body - The body of the request.
- * @param {number} req.body.tokenId - The unique identifier of the vehicle.
- * @param {string} req.body.owner - The owner of the vehicle.
- * @param {string} req.body.name - The name of the vehicle.
- * @param {string} req.body.description - A description of the vehicle.
- * @param {string} req.body.image - A URL to an image of the vehicle.
- * @param {string} req.body.vin - The Vehicle Identification Number of the vehicle.
- * @param {string} req.body.location - The current location of the vehicle, represented as a string of the format "longitude,latitude".
- * @param {number} req.body.mileage_km - The mileage of the vehicle in kilometers.
- * @param {number} req.body.reputation - The reputation score of the vehicle.
- * @param {number} req.body.price_usd - The price of the vehicle in USD.
- * @param {number} req.body.expenses - The expenses of the vehicle.
- * @param {number} req.body.revenue - The revenue of the vehicle.
- * @param {number[]} req.body.data - An array of data related to the vehicle.
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "message": "Vehicle has been created successfully.",
+ *    "vehicle": {
+ *        "tokenId": 4,
+ *        "owner": "NftCar4",
+ *        "name": "Mircidis",
+ *        "description": "Autonomous vehicle",
+ *        "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
+ *        "vin": "LM4AC113061sdas105688",
+ *        "location": "-73.9739026,40.7571447",
+ *        "mileage_km": 60000,
+ *        "reputation": 5,
+ *        "price_usd": 40000,
+ *        "expenses": 40,
+ *        "revenue": 100,
+ *        "data": [
+ *            4,
+ *            60000,
+ *            5,
+ *            40000,
+ *            40,
+ *            100
+ *        ]
+ *    }
+ * }
  * 
- * @param {Object} res - The Express response object.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Error message"
+ *     }
  * 
- * @returns {Object} - An object containing a message and the details of the created vehicle.
+ * @param {*} req 
+ * @param {*} res 
  */
 const addVehicle = (req, res) => {
     const vehicleData = req.body
@@ -93,11 +82,13 @@ const addVehicle = (req, res) => {
 }
 
 /**
- * POST localhost:5000/sim/passengers
+ * @api {post} localhost:5000/sim/passengers Add New Passenger
+ * @apiName AddNewPassenger
+ * @apiGroup Simulation
  * 
- * This endpoint is used to add a new passenger to the simulation.
+ * @apiDescription This endpoint is used to add a new passenger to the simulation.
  * 
- * Request example:
+ * @apiParamExample {json} Request-Example:
  * {
  *    "passengerId": 1,
  *    "name": "John Doe",
@@ -115,7 +106,7 @@ const addVehicle = (req, res) => {
  *    }
  * }
  * 
- * Response example:
+ * @apiSuccessExample {json} Success-Response:
  * {
  *    "message": "Passenger has been created successfully.",
  *    "passenger": {
@@ -139,6 +130,12 @@ const addVehicle = (req, res) => {
  *    }
  * }
  * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Error message"
+ *     }
+ * 
  * @param {*} req 
  * @param {*} res 
  */
@@ -154,54 +151,55 @@ const addPassenger = (req, res) => {
 }
 
 /**
- * GET localhost:5000/vehicles
+ * @api {get} localhost:5000/vehicles Get Vehicle Positions
+ * @apiName GetVehiclePositions
+ * @apiGroup Simulation
  * 
- * This endpoint returns the current position and other details of all vehicles in the simulation.
+ * @apiDescription This endpoint returns the current position and other details of all vehicles in the simulation.
  * 
- * @returns {Array} An array of objects, each representing a vehicle. Each vehicle object has the following properties:
- * - vehicleId: The unique identifier of the vehicle.
- * - name: The name of the vehicle.
- * - reputation: The reputation score of the vehicle.
- * - vin: The Vehicle Identification Number.
- * - position: An object containing the current longitude and latitude of the vehicle.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "vehicleId": 0,
+ *             "name": "Thesla",
+ *             "reputation": 5,
+ *             "vin": "LM4AC113061105688",
+ *             "position": {
+ *                 "longitude": -73.995018,
+ *                 "latitude": 40.73986
+ *             }
+ *         },
+ *         {
+ *             "vehicleId": 1,
+ *             "name": "Audio",
+ *             "reputation": 6,
+ *             "vin": "WAUKEAFM8DA033285",
+ *             "position": {
+ *                 "longitude": -73.9746686,
+ *                 "latitude": 40.7395275
+ *             }
+ *         },
+ *         {
+ *             "vehicleId": 2,
+ *             "name": "BeMeWe",
+ *             "reputation": 7,
+ *             "vin": "WAUKEAFM8DA033285",
+ *             "position": {
+ *                 "longitude": -73.9746686,
+ *                 "latitude": 40.7395275
+ *             }
+ *         }
+ *     ]
  * 
- * @example
- * // Response example
- * [
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
  *     {
- *         "vehicleId": 0,
- *         "name": "Thesla",
- *         "reputation": 5,
- *         "vin": "LM4AC113061105688",
- *         "position": {
- *             "longitude": -73.995018,
- *             "latitude": 40.73986
- *         }
- *     },
- *     {
- *         "vehicleId": 1,
- *         "name": "Audio",
- *         "reputation": 6,
- *         "vin": "WAUKEAFM8DA033285",
- *         "position": {
- *             "longitude": -73.9746686,
- *             "latitude": 40.7395275
- *         }
- *     },
- *     {
- *         "vehicleId": 2,
- *         "name": "BeMeWe",
- *         "reputation": 7,
- *         "vin": "WAUKEAFM8DA033285",
- *         "position": {
- *             "longitude": -73.9746686,
- *             "latitude": 40.7395275
- *         }
+ *       "error": "Error message"
  *     }
- * ]
  * 
- * @param {*} req The request object.
- * @param {*} res The response object.
+ * @param {*} req 
+ * @param {*} res 
  */
 const getVehiclesPosition = (req, res) => {
     try {
@@ -221,41 +219,34 @@ const getVehiclesPosition = (req, res) => {
     }
 }
 /**
- * GET localhost:5000/sim/vehicles/:id
+ * @api {get} localhost:5000/sim/vehicles/:id Get Vehicle Details
+ * @apiName GetVehicleDetails
+ * @apiGroup Simulation
  * 
- * This endpoint retrieves the details of a specific vehicle in the simulation.
- * The vehicle is identified by the `id` provided in the request parameters.
+ * @apiDescription This endpoint retrieves the details of a specific vehicle in the simulation. The vehicle is identified by the `id` provided in the request parameters.
  * 
- * @example 
- * Request: GET localhost:5000/sim/vehicles/1
- * Response:
- * [
-    {
-        "vehicleId": 1,
-        "name": "Audio",
-        "reputation": 6,
-        "vin": "WAUKEAFM8DA033285",
-        "position": {
-            "node_id": 11543660372,
-            "longitude": -73.9746686,
-            "latitude": 40.7395275
-        }
-    }
-]
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "vehicleId": 1,
+ *         "name": "Audio",
+ *         "reputation": 6,
+ *         "vin": "WAUKEAFM8DA033285",
+ *         "position": {
+ *             "node_id": 11543660372,
+ *             "longitude": -73.9746686,
+ *             "latitude": 40.7395275
+ *         }
+ *     }
  * 
- * @param {Object} req - The Express request object.
- * @param {Object} req.params - The parameters of the request.
- * @param {string} req.params.id - The ID of the vehicle to retrieve.
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Error message"
+ *     }
  * 
- * @param {Object} res - The Express response object.
- * 
- * @returns {Object[]} - An array containing the details of the requested vehicle.
- * Each object in the array includes the following properties:
- * - `vehicleId`: The unique identifier of the vehicle.
- * - `name`: The name of the vehicle.
- * - `reputation`: The reputation score of the vehicle.
- * - `vin`: The Vehicle Identification Number of the vehicle.
- * - `position`: An object containing the current position of the vehicle, represented as a `node_id`, `longitude`, and `latitude`.
+ * @param {*} req 
+ * @param {*} res 
  */
 const getVehiclePosition = (req, res) => {
     const { id } = req.params;
@@ -278,6 +269,43 @@ const getVehiclePosition = (req, res) => {
     }
 }
 
+/**
+ * @api {get} localhost:5000/sim/passengers Get Passenger Positions
+ * @apiName GetPassengerPositions
+ * @apiGroup Simulation
+ * 
+ * @apiDescription This endpoint returns the current position of all passengers in the simulation.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *         {
+ *             "passengerId": 1,
+ *             "position": {
+ *                 "node_id": 42433644,
+ *                 "longitude": -73.9973219,
+ *                 "latitude": 40.7570936
+ *             }
+ *         },
+ *         {
+ *             "passengerId": 2,
+ *             "position": {
+ *                 "node_id": 42433644,
+ *                 "longitude": -73.9973219,
+ *                 "latitude": 40.7570936
+ *             }
+ *         }
+ *     ]
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Error message"
+ *     }
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
 const getPassengerPositions = (req, res) => {
     try {
         let passengers = simulation.passengers.map(passenger => ({
@@ -291,71 +319,92 @@ const getPassengerPositions = (req, res) => {
     }
 }
 
+
+/**
+ * @api {get} localhost:5000/sim/passengers/:id Get Specific Passenger Position
+ * @apiName GetPassengerPosition
+ * @apiGroup Simulation
+ * 
+ * @apiDescription This endpoint returns the current position of a specific passenger in the simulation.
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *         "passengerId": 1,
+ *         "position": {
+ *             "node_id": 42433644,
+ *             "longitude": -73.9973219,
+ *             "latitude": 40.7570936
+ *         }
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Error message"
+ *     }
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+
 const getPassengerPosition = (req, res) => {
     const { id } = req.params;
+    console.log(id)
     try {
         let passenger = simulation.passengers
-            .find(passenger => passenger.id === id)
+            .filter(passenger => passenger.passengerId == id)
             .map(passenger => ({
                 passengerId: passenger.passengerId,
                 name: passenger.name,
                 position: passenger.status === PassengerStatus.IN_TRANSIT ? passenger.dropoff.position : passenger.pickup.position
             }));
-        res.status(200).json(passenger)
+        console.log('Passenger:', passenger); // Debug point
+        res.status(200).json(passenger);
     } catch (err) {
-        res.status(500).json({ error: err })
+        console.error('Error:', err); // Debug point
+        res.status(500).json({ error: err });
     }
 }
 /**
- * GET localhost:5000/sim/
+ * @api {get} localhost:5000/sim/ Get Simulation State
+ * @apiName GetSimulationState
+ * @apiGroup Simulation
  * 
- * This endpoint returns the current state of the simulation, including the details of all vehicles and passengers.
+ * @apiDescription This endpoint returns the current state of the simulation, including the details of all vehicles and passengers.
  * 
- * @returns {Object} An object containing two properties: 'vehicles' and 'passengers'.
- * 
- * 'vehicles' is an array of objects, each representing a vehicle. Each vehicle object has the following properties:
- * - tokenId: The unique identifier of the vehicle.
- * - owner: The owner of the vehicle.
- * - name: The name of the vehicle.
- * - description: A description of the vehicle.
- * - image: A URL to an image of the vehicle.
- * - vin: The Vehicle Identification Number.
- * - location: The current location of the vehicle, represented as a string of the format 'longitude,latitude'.
- * - mileage_km: The total mileage of the vehicle, in kilometers.
- * - reputation: The reputation score of the vehicle.
- * - price_usd: The price of the vehicle, in USD.
- * - expenses: The total expenses of the vehicle.
- * - revenue: The total revenue generated by the vehicle.
- * - data: An array containing the tokenId, mileage_km, reputation, price_usd, expenses, and revenue of the vehicle.
- * 
- * 'passengers' is an array of objects, each representing a passenger. This array is empty in the example response, but each passenger object would have properties similar to the vehicle objects.
- * 
-/**
- * @example
- * {
- *   "vehicles": [
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
  *     {
- *       "tokenId": 1,
- *       "owner": "John Doe",
- *       "name": "Car",
- *       "description": "A car",
- *       "image": "https://example.com/car.jpg",
- *       "vin": "1234567890",
- *       "location": "37.7749,-122.4194",
- *       "mileage_km": 10000,
- *       "reputation": 5,
- *       "price_usd": 20000,
- *       "expenses": 5000,
- *       "revenue": 10000,
- *       "data": [1, 10000, 5, 20000, 5000, 10000]
- *     },
- *      ...
- *   ],
- *   "passengers": []
- * }
- *
- * @param {*} req The request object.
- * @param {*} res The response object.
+ *       "vehicles": [
+ *         {
+ *           "tokenId": 1,
+ *           "owner": "John Doe",
+ *           "name": "Car",
+ *           "description": "A car",
+ *           "image": "https://example.com/car.jpg",
+ *           "vin": "1234567890",
+ *           "location": "37.7749,-122.4194",
+ *           "mileage_km": 10000,
+ *           "reputation": 5,
+ *           "price_usd": 20000,
+ *           "expenses": 5000,
+ *           "revenue": 10000,
+ *           "data": [1, 10000, 5, 20000, 5000, 10000]
+ *         },
+ *         ...
+ *       ],
+ *       "passengers": []
+ *     }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Error message"
+ *     }
+ * 
+ * @param {*} req 
+ * @param {*} res 
  */
 const getSimInfo = (_, res) => {
     //console.log(simulation.getSimInfo())

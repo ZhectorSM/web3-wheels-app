@@ -49,7 +49,7 @@ class Simulation {
 
         this.databaseUpdateInterval = setInterval(() => {
             this.updateDatabase()
-        }, 2000) // runs every 1 minute
+        }, 10000) // runs every 1 minute
     }
 
     /**
@@ -158,7 +158,6 @@ class Simulation {
                 })
             this.passengers.push(passenger);
             console.log(`Added passenger ${passenger.passengerId}.`);
-            console.log('passenger', passenger)
             return passenger;
         } catch (err) {
             console.error('Error adding passenger: ', err);
@@ -215,7 +214,6 @@ class Simulation {
                 matches.forEach(match => {
                     let vehicle = this.vehicles.find(vehicle => vehicle.position.node_id === match.vehicle_node_id);
                     let passenger = this.passengers.find(passenger => passenger.pickup.position.node_id === match.destination_node_id);
-                    console.log(`Assigning passenger from node ${passenger.pickup.position.node_id} to vehicle at node ${vehicle.position.node_id}.`);
                     this.assignPassengerToVehicle(passenger, vehicle)
                 })
             })
@@ -257,10 +255,7 @@ class Simulation {
         let assignedVehicles = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.ASSIGNED);
         console.log(`Starting to move ${assignedVehicles.length} assigned vehicles.`);
         assignedVehicles.forEach(async vehicle => {
-            console.log("Vehicle position", vehicle.position.node_id)
-            console.log("Vehicle route", vehicle.route)
             let nextNode = vehicle.route.shift();
-            console.log("Next node", nextNode)
             if (!nextNode) {
                 console.log(`Vehicle ${vehicle.tokenId} has reached the pickup location.`);
                 vehicle.status = VehicleStatus.CARRYING_PASSENGER;
@@ -277,13 +272,9 @@ class Simulation {
                     })
                 return;
             }
-            console.log(`Moving vehicle ${vehicle.tokenId} to next node ${nextNode}.`);
             aiService.moveVehicle(vehicle.tokenId, nextNode)
                 .then(data => {
-                    console.log(`Vehicle ${vehicle.tokenId} moved to position ${data.position}.`);
                     vehicle.position = data.position
-                    console.log(`Vehicle ${vehicle.tokenId} moved to position ${vehicle.position}.`);
-
                     vehicle.mileage_km += 0.1
                 })
                 .catch(err => {
@@ -313,10 +304,8 @@ class Simulation {
                 this.passengers = this.passengers.filter(passenger => passenger.status !== PassengerStatus.DROPPED_OFF);
                 return;
             }
-            console.log(`Moving vehicle ${vehicle.tokenId} to next node.`);
             aiService.moveVehicle(vehicle.tokenId, nextNode)
                 .then(data => {
-                    console.log(`Vehicle ${vehicle.tokenId} moved to position ${data.position}.`);
                     vehicle.position = data.position
                     vehicle.mileage_km += 0.1
                 })
