@@ -48,8 +48,8 @@ contract CarEodDataConsumer is ChainlinkClient {
       string memory apiCall = concatenateStrings(_api, Strings.toString(i));
 
       Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillArray.selector);
-      req._add("get", apiCall);
-      req._add("path", "stats");
+      req.add("get", apiCall);
+      req.add("path", "stats");
       sendOperatorRequest(req, oraclePayment);      
     }  
 
