@@ -1,5 +1,5 @@
 const express = require('express')
-const { addVehicle, addPassenger, getVehiclesPosition, getSimInfo, getVehiclePosition, getPassengerPositions, getPassengerPosition } = require('../controllers/simulation-controller')
+const { addVehicle, addPassenger, getVehiclesPosition, getSimInfo, getVehiclePosition, getPassengerPositions, getPassengerPosition, changeVehicleOperationMode } = require('../controllers/simulation-controller')
 
 /**
  * GET /: This route returns information about the simulation. The exact details of what is returned are determined by the getSimInfo controller function.
@@ -15,6 +15,8 @@ const { addVehicle, addPassenger, getVehiclesPosition, getSimInfo, getVehiclePos
  * GET /passengers: This route returns the positions of all passengers in the simulation. The positions are determined by the getPassengerPositions controller function.
  * 
  * GET /passengers/:id: This route returns the position of a specific passenger in the simulation. The ID of the passenger is provided as a route parameter and used by the getPassengerPosition controller function.
+ * 
+ * GET /vehicles/operation-mode/:id: This route changes the operation mode of a specific vehicle in the simulation. The ID of the vehicle and the new operation mode are provided in the request body and processed by the changeVehicleOperationMode controller function.
  */
 
 const simulationRouter = express.Router()
@@ -28,6 +30,9 @@ simulationRouter.route('/vehicles')
 
 simulationRouter.route('/vehicles/:id')
     .get(getVehiclePosition)
+
+simulationRouter.route('/vehicles/operation-mode/:id')
+    .post(changeVehicleOperationMode)
 
 simulationRouter.route('/passengers')
     .post(addPassenger)

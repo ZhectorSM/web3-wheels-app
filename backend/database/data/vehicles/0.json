@@ -1,15 +1,15 @@
 {
-  "tokenId": 2,
-  "owner": "NftCar2",
-  "name": "BeMeWe",
-  "description": "Self spinning car",
+  "tokenId": 0,
+  "owner": "NftCar0",
+  "name": "Thesla",
+  "description": "Autonomous car",
   "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
-  "vin": "WAUKEAFM8DA033285",
-  "location": "3.80,-12.645",
-  "mileage_km": 25000,
-  "reputation": 7,
-  "price_usd": 53000,  
-  "expenses": 12,
-  "revenue": 48,
-  "stats": [2, 25000, 7, 53000, 12, 48]
+  "vin": "LM4AC113061105688",
+  "location": "37.826250,-122.247604",
+  "mileage_km": 60000,
+  "reputation": 5,
+  "price_usd": 40000,
+  "expenses": 40,
+  "revenue": 103,  
+  "stats": [0, 68000, 5, 40000, 40, 103]
 }

@@ -287,6 +287,35 @@ This backend API is designed to manage a simulation of vehicles and passengers. 
     }
     ```
 
+### Change Operation Mode of a Vehicle
+
+- Endpoint: POST /sim/vehicles/operation-mode/1
+
+- Description: Changes the operation of the vehicle with specific id 
+
+- Request Example :
+    ```json 
+    {
+        "operation_mode" : 1
+    }
+
+
+    ```
+- Success Response:
+    ```json
+    {
+        "message": "Vehicle operation mode has been updated successfully."
+    }
+    ```
+
+- Error Response:
+    ```json 
+    {
+        "error": "Error message"
+    }
+    ```
+
+
 ### Get Simulation State
 
 - GET /sim/

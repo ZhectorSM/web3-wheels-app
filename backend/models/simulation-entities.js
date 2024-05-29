@@ -19,18 +19,21 @@ const VehicleStatus = {
     }
 }
 
-const VehicleStrategy = {
-    AnyType: 1,
-    AnotherType: 2,
-    YetAnotherType: 3,
-    getKeyByValue: function (value) {
-        return Object.keys(this).find(key => this[key] === value);
-    }
-};
+/**
+ * min-wait-time
+max-passenger
+min-expenses
+max-revenue
+nearby 
+ */
 
-const VehicleOperatingMode = Object.freeze({
-    //TODO add modes, check with Mihir. 
-})
+const VehicleOperatingMode = {
+    MIN_WAIT_TIME: 0,
+    MAX_PASSENGER: 1,
+    MIN_EXPENSES: 2,
+    MAX_REVENUE: 3,
+    NEARBY: 4,
+}
 
 class Vehicle {
     constructor(data) {
@@ -49,9 +52,10 @@ class Vehicle {
         this.price_usd = data.price_usd;
         this.revenue = data.revenue;
         this.expenses = data.expenses;
-        this.data = data.data;
+        this.stats = data.stats;
         this.destination = null
         this.status = VehicleStatus.IDLE; // Default status is 'idle'
+        this.operationMode = data.operation_mode || VehicleOperatingMode.MIN_WAIT_TIME; // Default strategy is 'min-wait-time'
         this.currentPassenger = null;
     }
     toJSON() {
@@ -68,7 +72,8 @@ class Vehicle {
             price_usd: this.price_usd,
             expenses: this.expenses,
             revenue: this.revenue,
-            data: [this.tokenId, this.mileage_km, this.reputation, this.price_usd, this.expenses, this.revenue]
+            operation_mode: this.operationMode,
+            stats: [this.tokenId, this.mileage_km, this.reputation, this.price_usd, this.expenses, this.revenue]
         };
     }
 }
@@ -103,4 +108,4 @@ class Passenger {
     }
 }
 
-module.exports = { Vehicle, Passenger, VehicleStatus, PassengerStatus };
+module.exports = { Vehicle, Passenger, VehicleStatus, PassengerStatus, VehicleOperatingMode};

@@ -45,11 +45,11 @@ class Simulation {
         //this run every 1 second, update the simulation environment
         this.iterationInterval = setInterval(() => {
             this.updateSimulation();
-        }, 1000); // runs every 1 second
+        }, 50000); // runs every 1 second
 
         this.databaseUpdateInterval = setInterval(() => {
             this.updateDatabase()
-        }, 10000) // runs every 1 minute
+        }, 3000) // runs every 1 minute
     }
 
     /**
@@ -78,7 +78,7 @@ class Simulation {
         console.log('Updating simulation...');
         // Add logic to update the simulation environment here
         // For example, you could update vehicle locations, calculate new mileage, etc.
-        
+
         this.movePassengerCarryingVehiclesTowardsDropOffLocations()
         this.moveAssignedVehiclesTowardsPickUpLocations()
         this.findMockDestinationsForVehiclesInIdle()
@@ -193,7 +193,7 @@ class Simulation {
         let price = 3.0
         await aiService.calculateDistanceBasedPrice(passenger.passengerId, passenger.pickup.position.node_id, passenger.dropoff.position.node_id)
             .then(distance => {
-                price += (distance * 1.5 * this.calculateFactor()) 
+                price += (distance * 1.5 * this.calculateFactor())
 
             })
         return price
@@ -220,7 +220,7 @@ class Simulation {
             .catch(err => {
                 console.error('Error getting mock destinations for vehicles: ', err);
                 console.log(`Failed to get mock destinations for idle vehicles.`);
-            })  
+            })
     }
 
     /**
@@ -235,7 +235,7 @@ class Simulation {
         await aiService.findRoute(vehicle.tokenId, vehicle.position.node_id, passenger.pickup.position.node_id)
             .then(data => {
                 console.log(`Found route for vehicle ${vehicle.tokenId} and passenger ${passenger.passengerId} : ${data.route}.`);
-                vehicle.route = data.route; 
+                vehicle.route = data.route;
                 passenger.status = PassengerStatus.ASSIGNED;
                 vehicle.currentPassenger = passenger;
                 vehicle.status = VehicleStatus.ASSIGNED;
@@ -315,6 +315,18 @@ class Simulation {
                 })
         })
     }
+
+    async changeVehicleOperationMode(vehicleId, operationMode) {
+        let vehicles = this.vehicles.filter(vehicle => vehicle.tokenId == vehicleId)
+        if (!vehicles) throw new Error(`Vehicle ${vehicleId} not found`)
+        vehicles.forEach(vehicle => {
+            console.log(`Changing operation mode for vehicle ${vehicleId} to ${operationMode}.`);
+            vehicle.operationMode = operationMode;
+            console.log(`Changed operation mode for vehicle ${vehicle} to ${operationMode}.`);
+        })
+
+    }
+
     getSimInfo() {
         return {
             vehicles: this.vehicles,

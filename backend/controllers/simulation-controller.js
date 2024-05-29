@@ -69,16 +69,21 @@ const { Vehicle, Passenger, VehicleStatus, PassengerStatus } = require('../model
  * @param {*} res 
  */
 const addVehicle = (req, res) => {
-    const vehicleData = req.body
-    const id = vehicleData.tokenId
-    console.log(vehicleData)
+   try {
+    const vehicleData = req.body;
+    const id = vehicleData.tokenId;
+    console.log(vehicleData);
     simulation.addVehicle(vehicleData)
         .then((vehicle) => {
-            res.status(201).json({ message: 'Vehicle has been created successfully.', vehicle: vehicle })
+            res.status(201).json({ message: 'Vehicle has been created successfully.', vehicle: vehicle });
         })
         .catch(error => {
-            res.status(500).json({ error: error })
-        })
+            res.status(500).json({ error: error });
+        });
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An unexpected error occurred.' });
+}
 }
 
 /**
@@ -140,14 +145,18 @@ const addVehicle = (req, res) => {
  * @param {*} res 
  */
 const addPassenger = (req, res) => {
-    const passengerData = req.body
-    simulation.addPassenger(passengerData)
-        .then((passenger) => {
-            res.status(201).json({ message: 'Passenger has been created successfully.', passenger: passenger })
-        })
-        .catch(error => {
-            res.status(500).json({ error: error.message })
-        })
+    try {
+        const passengerData = req.body
+        simulation.addPassenger(passengerData)
+            .then((passenger) => {
+                res.status(201).json({ message: 'Passenger has been created successfully.', passenger: passenger })
+            })
+            .catch(error => {
+                res.status(500).json({ error: error.message })
+            })
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
 }
 
 /**
@@ -367,6 +376,51 @@ const getPassengerPosition = (req, res) => {
     }
 }
 /**
+ * @api {post} localhost:5000/sim/vehicles/operation-mode/:id Update Vehicle Operation Mode
+ * @apiName UpdateVehicleOperationMode
+ * @apiGroup Simulation
+ * 
+ * @apiDescription This endpoint is used to update the operation mode of a vehicle in the simulation.
+ * 
+ * @apiParamExample {json} Request-Example:
+ * {
+ *    "operation_mode" : 1
+ * }
+ * 
+ * @apiSuccessExample {json} Success-Response:
+ * {
+ *    "message": "Vehicle operation mode has been updated successfully."
+ * }
+ * 
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 500 Internal Server Error
+ *     {
+ *       "error": "Error message"
+ *     }
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+const changeVehicleOperationMode = (req, res) => {
+    try {
+        const { id } = req.params;
+        const { operation_mode } = req.body;
+        console.log(`Request received for ${id} to change operation mode ${operation_mode}.`);
+        simulation.changeVehicleOperationMode(id, operation_mode)
+            .then(() => {
+                res.status(200).json({ message: 'Vehicle operation mode has been updated successfully.' })
+            })
+            .catch(error => {
+                res.status(500).json({ error: error })
+            })
+    } catch (err) {
+        res.status(500).json({ error: err })
+
+    }
+}
+
+
+/**
  * @api {get} localhost:5000/sim/ Get Simulation State
  * @apiName GetSimulationState
  * @apiGroup Simulation
@@ -413,4 +467,4 @@ const getSimInfo = (_, res) => {
 
 
 
-module.exports = { addVehicle, addPassenger, getVehiclesPosition, getSimInfo, getVehiclePosition, getPassengerPositions, getPassengerPosition }
+module.exports = { addVehicle, addPassenger, getVehiclesPosition, getSimInfo, getVehiclePosition, getPassengerPositions, getPassengerPosition, changeVehicleOperationMode }
