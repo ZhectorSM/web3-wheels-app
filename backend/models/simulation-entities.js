@@ -10,8 +10,8 @@ const PassengerStatus = {
 }
 
 const VehicleStatus = {
-    ASSIGNED: 0,
-    IDLE: 1,
+    IDLE: 0,
+    ASSIGNED: 1,
     MOVING: 2,
     CARRYING_PASSENGER: 3,
     getKeyByValue: function (value) {

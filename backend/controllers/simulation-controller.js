@@ -91,7 +91,57 @@ const addVehicle = (req, res) => {
             res.status(500).json({ error: error })
         })
 }
-//TODO check
+
+/**
+ * POST localhost:5000/sim/passengers
+ * 
+ * This endpoint is used to add a new passenger to the simulation.
+ * 
+ * Request example:
+ * {
+ *    "passengerId": 1,
+ *    "name": "John Doe",
+ *    "pickup": {
+ *        "position": {
+ *            "longitude": -73.9973219,
+ *            "latitude": 40.7570936
+ *        }
+ *    },
+ *    "dropoff": {
+ *        "position": {
+ *            "longitude": -73.9973219,
+ *            "latitude": 40.7570936
+ *        }
+ *    }
+ * }
+ * 
+ * Response example:
+ * {
+ *    "message": "Passenger has been created successfully.",
+ *    "passenger": {
+ *        "passengerId": 1,
+ *        "pickup": {
+ *            "position": {
+ *                "node_id": 42433644,
+ *                "longitude": -73.9973219,
+ *                "latitude": 40.7570936
+ *            }
+ *        },
+ *        "dropoff": {
+ *            "position": {
+ *                "node_id": 42433644,
+ *                "longitude": -73.9973219,
+ *                "latitude": 40.7570936
+ *            }
+ *        },
+ *        "status": 0,
+ *        "ridePrice": 3
+ *    }
+ * }
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
 const addPassenger = (req, res) => {
     const passengerData = req.body
     simulation.addPassenger(passengerData)

@@ -5,9 +5,9 @@ const HOST = process.env.AI_SERVICE_HOST || 'localhost';
 const PORT = process.env.AI_SERVICE_PORT || 8002;
 const HOME = process.env.AI_SERVICE_HOME || '/';
 const API_FIND_CLOSEST_NODE_ID = process.env.AI_SERVICE_MAP_API_FIND_CLOSEST_NODE
-const API_MOVE_VEHICLE = process.env.AI_SERVICE_MAP_API_MOVE_VEHICLE
+const API_MOVE_VEHICLE = process.env.AI_SERVICE_AI_API_MOVE_VEHICLE
 const API_FIND_DISTANCE = process.env.AI_SERIVCE_MAP_API_FIND_DISTANCE
-const API_FIND_ROUTE = process.env.AI_SERVICE_MAP_API_FIND_ROUTE
+const API_FIND_ROUTE = process.env.AI_SERVICE_AI_API_FIND_ROUTE
 const API_FIND_MOCK_DESTINATIONS = process.env.AI_SERVICE_AI_API_FIND_MOCK_DESTINATIONS
 const API_FIND_DESTINATIONS = process.env.AI_SERVICE_MAP_API_FIND_DESTINATIONS
 
@@ -184,7 +184,7 @@ const calculateDistanceBasedPrice = async (passenger_id, source_node_id, target_
     throw new Error('Error calculating distance based price');
   }
 }
-//TODO 
+
 const findRoute = async (vehicle_id, source_node_id, target_node_id) => {
   try{
     data = {
@@ -192,7 +192,9 @@ const findRoute = async (vehicle_id, source_node_id, target_node_id) => {
       source_node_id,
       target_node_id
     }
+    console.log("Findin route", data)
     const response = await axios.post(`http://${HOST}:${PORT}${API_FIND_ROUTE}`, data);
+    console.log('response', response.data)
     return response.data
   }catch(error){
     throw new Error('Error finding route');

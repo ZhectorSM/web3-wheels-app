@@ -45,11 +45,11 @@ class Simulation {
         //this run every 1 second, update the simulation environment
         this.iterationInterval = setInterval(() => {
             this.updateSimulation();
-        },  1000); // runs every 1 second
+        }, 1000); // runs every 1 second
 
         this.databaseUpdateInterval = setInterval(() => {
             this.updateDatabase()
-        }, 60000) // runs every 1 minute
+        }, 2000) // runs every 1 minute
     }
 
     /**
@@ -65,7 +65,7 @@ class Simulation {
         })
     }
 
-   
+
     /**
      * Updates the simulation environment.
      * This method is responsible for updating the simulation environment, such as vehicle locations, mileage, etc.
@@ -78,9 +78,10 @@ class Simulation {
         console.log('Updating simulation...');
         // Add logic to update the simulation environment here
         // For example, you could update vehicle locations, calculate new mileage, etc.
-        this.findMockDestinationsForVehiclesInIdle()
-        this.moveAssignedVehiclesTowardsPickUpLocations()
+        
         this.movePassengerCarryingVehiclesTowardsDropOffLocations()
+        this.moveAssignedVehiclesTowardsPickUpLocations()
+        this.findMockDestinationsForVehiclesInIdle()
     }
 
     /**
@@ -106,19 +107,22 @@ class Simulation {
             if (!data.tokenId && data.tokenId !== 0) throw new Error('Vehicle tokenId is required')
             if (this.vehicles.find(vehicle => vehicle.tokenId === data.tokenId)) throw new Error('Vehicle already exists')
             const vehicle = new Vehicle(data);
+            console.log(`Adding vehicle ${vehicle.tokenId}.`);
             await aiService.getClosestNodeId(vehicle.tokenId, vehicle.position)
                 .then(position => {
+                    console.log(`Found position for vehicle ${vehicle.tokenId}: ${position}.`);
                     vehicle.position = position
                 })
             this.vehicles.push(vehicle);
+            console.log(`Added vehicle ${vehicle.tokenId}.`);
             this.updateDatabase()
             return vehicle;
         }
         catch (err) {
             console.error('Error adding vehicle: ', err);
+            console.log(`Failed to add vehicle ${data.tokenId}.`);
             throw err
         }
-
     }
 
     /**
@@ -131,23 +135,34 @@ class Simulation {
     async addPassenger(data) {
         try {
             const passenger = new Passenger(data);
+            console.log(`Adding passenger ${passenger.passengerId}.`);
             await aiService.getClosestNodeId(passenger.passengerId, passenger.pickup.position)
                 .then(pickupPosition => {
-                    console.log('pickupPosition', pickupPosition)
-                    passenger.pickup = pickupPosition
+                    console.log(`Found pickup position for passenger ${passenger.passengerId}: ${pickupPosition}.`);
+                    passenger.pickup.position = pickupPosition;
                 })
             await aiService.getClosestNodeId(passenger.passengerId, passenger.dropoff.position)
                 .then(dropoffPosition => {
-                    console.log('dropoffPosition', dropoffPosition)
-                    passenger.dropoff = dropoffPosition
+                    console.log(`Found dropoff position for passenger ${passenger.passengerId}: ${dropoffPosition}.`);
+                    passenger.dropoff.position = dropoffPosition;
                 })
-            await aiService.findRoute(passenger.passengerId, passenger.pickup.node_id, passenger.dropoff.node_id)
+            await aiService.findRoute(passenger.passengerId, passenger.pickup.position.node_id, passenger.dropoff.position.node_id)
+                .then(route => {
+                    console.log(`Found route for passenger ${passenger.passengerId}.`);
+                })
             await this.calculateTheRidePrice(passenger)
-                .then(price => { passenger.ridePrice = price })
+                .then(price => {
+                    console.log(`Calculated ride price for passenger ${passenger.passengerId}: ${price}.`);
+                    passenger.ridePrice = price;
+                    console.log(`Ride price ${passenger.ridePrice}.`);
+                })
             this.passengers.push(passenger);
+            console.log(`Added passenger ${passenger.passengerId}.`);
+            console.log('passenger', passenger)
             return passenger;
         } catch (err) {
-            throw err
+            console.error('Error adding passenger: ', err);
+            throw err;
         }
     }
 
@@ -176,12 +191,13 @@ class Simulation {
      * @returns {Promise<number>} The calculated ride price.
      */
     async calculateTheRidePrice(passenger) {
-        console.log('passenger', passenger)
-        await aiService.calculateDistanceBasedPrice(passenger.passengerId, passenger.pickup.node_id, passenger.dropoff.node_id)
+        let price = 3.0
+        await aiService.calculateDistanceBasedPrice(passenger.passengerId, passenger.pickup.position.node_id, passenger.dropoff.position.node_id)
             .then(distance => {
-                return (distance * 1.5 * this.calculateFactor()) + 3.0;
+                price += (distance * 1.5 * this.calculateFactor()) 
 
             })
+        return price
     }
 
     /**
@@ -190,16 +206,23 @@ class Simulation {
      */
     async findMockDestinationsForVehiclesInIdle() {
         let idleVehiclesNodeIds = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.IDLE).map(vehicle => vehicle.position.node_id);
-        let idlePassengersNodeIds = this.passengers.filter(passenger => passenger.status === PassengerStatus.IDLE).map(passenger => passenger.pickup.node_id);
+        let idlePassengersNodeIds = this.passengers.filter(passenger => passenger.status === PassengerStatus.WAITING).map(passenger => passenger.pickup.position.node_id);
+        console.log(`Found ${idleVehiclesNodeIds.length} idle vehicles and ${idlePassengersNodeIds.length} idle passengers.`);
+        if (idleVehiclesNodeIds.length === 0 || idlePassengersNodeIds.length === 0) return;
         aiService.getMockDestinationsForVehicles(idleVehiclesNodeIds, idlePassengersNodeIds)
             .then(matches => {
+                console.log(`Found ${matches.length} matches for idle vehicles and passengers.`);
                 matches.forEach(match => {
                     let vehicle = this.vehicles.find(vehicle => vehicle.position.node_id === match.vehicle_node_id);
-                    let passenger = this.passengers.find(passenger => passenger.pickup.node_id === match.destination_node_id);
+                    let passenger = this.passengers.find(passenger => passenger.pickup.position.node_id === match.destination_node_id);
+                    console.log(`Assigning passenger from node ${passenger.pickup.position.node_id} to vehicle at node ${vehicle.position.node_id}.`);
                     this.assignPassengerToVehicle(passenger, vehicle)
-
                 })
             })
+            .catch(err => {
+                console.error('Error getting mock destinations for vehicles: ', err);
+                console.log(`Failed to get mock destinations for idle vehicles.`);
+            })  
     }
 
     /**
@@ -210,16 +233,21 @@ class Simulation {
      * @returns {Promise<void>} - A promise that resolves when the passenger is assigned to the vehicle and the route is found.
      */
     async assignPassengerToVehicle(passenger, vehicle) {
-        await aiService.findRoute(vehicle.tokenId, vehicle.position.node_id, passenger.pickup.node_id)
-            .then(route => {
-                vehicle.route = route
-                passenger.status = PassengerStatus.ASSIGNED
+        console.log(`Assigning passenger ${passenger.passengerId} to vehicle ${vehicle.tokenId}.`);
+        await aiService.findRoute(vehicle.tokenId, vehicle.position.node_id, passenger.pickup.position.node_id)
+            .then(data => {
+                console.log(`Found route for vehicle ${vehicle.tokenId} and passenger ${passenger.passengerId} : ${data.route}.`);
+                vehicle.route = data.route; 
+                passenger.status = PassengerStatus.ASSIGNED;
                 vehicle.currentPassenger = passenger;
-                vehicle.status = VehicleStatus.ASSIGNED
+                vehicle.status = VehicleStatus.ASSIGNED;
+                console.log(`Passenger ${passenger.passengerId} assigned to vehicle ${vehicle.tokenId}.`);
             })
-            .catch(err => console.error('Error finding route for vehicle and passenger: ', err))
+            .catch(err => {
+                console.error('Error finding route for vehicle and passenger: ', err);
+                console.log(`Failed to find route for vehicle ${vehicle.tokenId} and passenger ${passenger.passengerId}.`);
+            })
     }
-
     /**
      * Moves assigned vehicles towards pick-up locations.
      * 
@@ -227,25 +255,41 @@ class Simulation {
      */
     async moveAssignedVehiclesTowardsPickUpLocations() {
         let assignedVehicles = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.ASSIGNED);
+        console.log(`Starting to move ${assignedVehicles.length} assigned vehicles.`);
         assignedVehicles.forEach(async vehicle => {
+            console.log("Vehicle position", vehicle.position.node_id)
+            console.log("Vehicle route", vehicle.route)
             let nextNode = vehicle.route.shift();
+            console.log("Next node", nextNode)
             if (!nextNode) {
+                console.log(`Vehicle ${vehicle.tokenId} has reached the pickup location.`);
                 vehicle.status = VehicleStatus.CARRYING_PASSENGER;
                 vehicle.currentPassenger.status = PassengerStatus.IN_TRANSIT;
-                await aiService.findRoute(vehicle.tokenId, vehicle.position.node_id, vehicle.currentPassenger.dropoff.node_id)
-                .then(route => {
-                    vehicle.route = route
-                })
-                .catch(err => console.error('Error finding route for vehicle and passenger: ', err))
+                console.log(`Picking up passenger ${vehicle.currentPassenger.passengerId}.`);
+                await aiService.findRoute(vehicle.tokenId, vehicle.position.node_id, vehicle.currentPassenger.dropoff.position.node_id)
+                    .then(data => {
+                        console.log(`Found route for vehicle ${vehicle.tokenId} and passenger to dropoff location : ${data.route}.`);
+                        vehicle.route = data.route
+                    })
+                    .catch(err => {
+                        console.error('Error finding route for vehicle and passenger: ', err);
+                        console.log(`Failed to find route for vehicle ${vehicle.tokenId} and passenger.`);
+                    })
                 return;
             }
+            console.log(`Moving vehicle ${vehicle.tokenId} to next node ${nextNode}.`);
             aiService.moveVehicle(vehicle.tokenId, nextNode)
-                .then(position => {
-                    vehicle.position = position
+                .then(data => {
+                    console.log(`Vehicle ${vehicle.tokenId} moved to position ${data.position}.`);
+                    vehicle.position = data.position
+                    console.log(`Vehicle ${vehicle.tokenId} moved to position ${vehicle.position}.`);
+
                     vehicle.mileage_km += 0.1
-                    
                 })
-                .catch(err => console.error('Error moving vehicle: ', err))
+                .catch(err => {
+                    console.error('Error moving vehicle in assignned vehicle: ', err);
+                    console.log(`Failed to move vehicle ${vehicle.tokenId}.`);
+                })
         })
     }
 
@@ -255,29 +299,33 @@ class Simulation {
      */
     async movePassengerCarryingVehiclesTowardsDropOffLocations() {
         let carryingPassengerVehicles = this.vehicles.filter(vehicle => vehicle.status === VehicleStatus.CARRYING_PASSENGER);
+        console.log(`Starting to move ${carryingPassengerVehicles.length} passenger-carrying vehicles.`);
         carryingPassengerVehicles.forEach(async vehicle => {
             let nextNode = vehicle.route.shift();
             if (!nextNode) {
+                console.log(`Vehicle ${vehicle.tokenId} has reached dropoff location.`);
+                console.log(`Dropping off passenger ${vehicle.currentPassenger.passengerId}.`);
                 vehicle.status = VehicleStatus.IDLE;
                 vehicle.currentPassenger.status = PassengerStatus.DROPPED_OFF;
                 vehicle.reputation += 1
                 vehicle.revenue += vehicle.currentPassenger.ridePrice
-                this.passengers.remove(vehicle.currentPassenger)
                 vehicle.currentPassenger = null
+                this.passengers = this.passengers.filter(passenger => passenger.status !== PassengerStatus.DROPPED_OFF);
                 return;
             }
+            console.log(`Moving vehicle ${vehicle.tokenId} to next node.`);
             aiService.moveVehicle(vehicle.tokenId, nextNode)
-                .then(position => {
-                    vehicle.position = position
+                .then(data => {
+                    console.log(`Vehicle ${vehicle.tokenId} moved to position ${data.position}.`);
+                    vehicle.position = data.position
                     vehicle.mileage_km += 0.1
-               
-                    
                 })
-                .catch(err => console.error('Error moving vehicle: ', err))
+                .catch(err => {
+                    console.error('Error moving vehicle: ', err);
+                    console.log(`Failed to move vehicle ${vehicle.tokenId}.`);
+                })
         })
-    
     }
-
     getSimInfo() {
         return {
             vehicles: this.vehicles,

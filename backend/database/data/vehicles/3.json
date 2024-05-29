@@ -1,0 +1,22 @@
+{
+  "tokenId": 3,
+  "owner": "NftCar3",
+  "name": "Mircvidis",
+  "description": "Self spinning car",
+  "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
+  "vin": "WAUKEAFM8DA033285",
+  "location": "-73.9973219,40.7570936",
+  "mileage_km": 25001.99999999997,
+  "reputation": 19,
+  "price_usd": 53000,
+  "expenses": 12,
+  "revenue": 84,
+  "data": [
+    3,
+    25001.99999999997,
+    19,
+    53000,
+    12,
+    84
+  ]
+}
