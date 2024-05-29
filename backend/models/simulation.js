@@ -42,13 +42,14 @@ class Simulation {
             throw new Error("Simulation not set up. Please call setup() first.")
         }
         console.log('Simulation started');
+        //this run every 1 second, update the simulation environment
         this.iterationInterval = setInterval(() => {
             this.updateSimulation();
-        }, 100); // runs every 1 second
+        },  1000); // runs every 1 second
 
         this.databaseUpdateInterval = setInterval(() => {
             this.updateDatabase()
-        }, 1000)
+        }, 60000) // runs every 1 minute
     }
 
     /**
