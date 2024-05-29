@@ -6,10 +6,10 @@
   "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
   "vin": "WAUKEAFM8DA033285",
   "location": "3.80,-12.645",
-  "mileage_km": 10000,
+  "mileage_km": 11000,
   "reputation": 6,
   "price_usd": 50000,  
   "expenses": 20,
-  "revenue": 70,
-  "stats": [1, 10000, 6, 50000, 20, 70]
+  "revenue": 75,
+  "stats": [1, 11000, 6, 50000, 20, 75]
 }
