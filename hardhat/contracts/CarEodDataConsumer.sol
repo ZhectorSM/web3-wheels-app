@@ -32,7 +32,11 @@ contract CarEodDataConsumer is ChainlinkClient {
   uint256 private oraclePayment;
 
   constructor(address _NftCarAddress) {
+    //Sepolia: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+    //Scroll: 0x7273ebbB21F8D8AcF2bC12E71a08937712E9E40c
     setChainlinkToken(0x779877A7B0D9E8603169DdbD7836e478b4624789);
+    //Sepolia: 0x6c2e87340Ef6F3b7e21B2304D6C057091814f25E
+    //Scroll: Not supported
     setChainlinkOracle(0x6c2e87340Ef6F3b7e21B2304D6C057091814f25E);
     externalJobId = "eab9fe9db74f403d967ee207870a943f";
     oraclePayment = ((0 * LINK_DIVISIBILITY) / 10); // n * 10**18
