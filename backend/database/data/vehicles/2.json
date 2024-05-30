@@ -1,15 +1,15 @@
 {
   "tokenId": 2,
-  "owner": "NftCar2",
-  "name": "BeMeWe",
-  "description": "Self spinning car",
-  "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
-  "vin": "WAUKEAFM8DA033285",
-  "location": "3.80,-12.645",
+  "owner": "0xF0E6CfaA5FD8C329E5098c5855cD02F1170bF71a",
+  "name": "Knight Rider",
+  "description": "1982 Pontiac Trans Am",
+  "image": "https://ipfs.io/ipfs/QmRU4ouTkpH7fMxLL3eVRrThtNk4cE8sym2gbNw9QpKzM6",
+  "vin": "KITT19820KS005705",
+  "location": "40.763218612574384,-73.96768571057004",
   "mileage_km": 25000,
-  "reputation": 7,
+  "reputation": 9,
   "price_usd": 53000,  
-  "expenses": 12,
-  "revenue": 48,
-  "stats": [2, 25000, 7, 53000, 12, 48]
+  "expenses": 120,
+  "revenue": 200,
+  "stats": [2, 25000, 9, 53000, 120, 200]
 }
