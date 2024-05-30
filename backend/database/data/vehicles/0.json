@@ -1,0 +1,15 @@
+{
+  "tokenId": 0,
+  "owner": "NftCar0",
+  "name": "Thesla",
+  "description": "Autonomous car",
+  "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
+  "vin": "LM4AC113061105688",
+  "location": "37.826250,-122.247604",
+  "mileage_km": 60000,
+  "reputation": 5,
+  "price_usd": 40000,
+  "expenses": 40,
+  "revenue": 103,  
+  "stats": [0, 68000, 5, 40000, 40, 103]
+}
