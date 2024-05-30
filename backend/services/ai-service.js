@@ -192,9 +192,9 @@ const findRoute = async (vehicle_id, source_node_id, target_node_id) => {
       source_node_id,
       target_node_id
     }
-    console.log("Findin route", data)
+    //console.log("Findin route", data)
     const response = await axios.post(`http://${HOST}:${PORT}${API_FIND_ROUTE}`, data);
-    console.log('response', response.data)
+    //console.log('response', response.data)
     return response.data
   }catch(error){
     throw new Error('Error finding route');

@@ -19,8 +19,6 @@ app.use('/sim', simulationRouter)
 //home call when service is up
 app.get('/', (req, res) => {  
   res.send('Web3Wheels');
-  //get path to this route
-  console.log(req.originalUrl);
 });
 
 const start = async () => {

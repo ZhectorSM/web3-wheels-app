@@ -1,15 +1,15 @@
 {
-  "tokenId": 0,
-  "owner": "0xC2076A08bCe8B5FD9128Df8F25F4307df2f2F29f",
-  "name": "Thezla",
-  "description": "Autonomous car",
-  "image": "https://ipfs.io/ipfs/QmQnLGyE9ZiMe2ZPqZNbD7AZ1PH3YqqHADVc6LTVR3XSXf",
-  "vin": "LM4AC113061105688",
-  "location": "40.746251191293744,-73.998157582049",
-  "mileage_km": 60000,
-  "reputation": 7,
-  "price_usd": 35000,
-  "expenses": 350,
-  "revenue": 524,  
-  "stats": [0, 60000, 7, 350, 524]
+  "tokenId": 2,
+  "owner": "0xF0E6CfaA5FD8C329E5098c5855cD02F1170bF71a",
+  "name": "Knight Rider",
+  "description": "1982 Pontiac Trans Am",
+  "image": "https://ipfs.io/ipfs/QmRU4ouTkpH7fMxLL3eVRrThtNk4cE8sym2gbNw9QpKzM6",
+  "vin": "KITT19820KS005705",
+  "location": "40.763218612574384,-73.96768571057004",
+  "mileage_km": 25000,
+  "reputation": 9,
+  "price_usd": 53000,  
+  "expenses": 120,
+  "revenue": 200,
+  "stats": [2, 25000, 9, 120, 200]
 }

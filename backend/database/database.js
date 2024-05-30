@@ -22,11 +22,13 @@ const dbReadAllVehicles = async () => {
         const files = await readdir(vehiclesDirPath);
         const vehicles = [];
         for (const file of files) {
+            //console.log(`Reading file ${file}...`);
             const filePath = path.join(vehiclesDirPath, file);
             const data = await readFile(filePath, 'utf8');
             const vehicle = JSON.parse(data);
             vehicles.push(vehicle);
         }
+       // console.log(`All vehicles: ${vehicles}`);
         return vehicles;
     } catch (error) {
         console.error(`Error reading all vehicles: ${error}`);
@@ -56,7 +58,7 @@ const dbUpdateVehicle = async (vehicleTokenId, data) => {
     try {
         const filePath = path.join(__dirname, 'data', 'vehicles', `${vehicleTokenId}.json`);
         await writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
-        console.log(`Data has been updated in file ${vehicleTokenId}.json successfully.`);
+        //console.log(`Data has been updated in file ${vehicleTokenId}.json successfully.`);
     } catch (error) {
         console.error(`Error updating file: ${error}`);
         throw(`Error updating file: ${error}`);
