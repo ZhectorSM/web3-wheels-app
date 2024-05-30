@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
@@ -9,10 +9,14 @@ library PriceConverter {
     /**    
      *
      * ETH in terms of USD 
-     * 
-     * Network: Sepolia
      * Aggregator: ETH/USD
+     *
+     * Network: Sepolia 
      * Address: 0x694AA1769357215DE4FAC081bf1f309aDC325306
+     *
+     * Network: Scroll
+     * Address: 0x59F1ec1f10bD7eD9B938431086bC1D9e233ECf41
+     *
      */
     function getPrice() public view returns (uint256) {  
         AggregatorV3Interface dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);//Init datafeed      
