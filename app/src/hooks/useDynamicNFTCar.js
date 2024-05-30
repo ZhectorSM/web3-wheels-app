@@ -21,7 +21,7 @@ const useDynamicNFTCar = ({
     isError: getFleetError,
     refetch: refetchFleet
   } = useReadContract({
-    address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+    address: process.env.NEXT_PUBLIC_NFT_CAR_CONTRACT_ADDRESS,
     abi,
     functionName: "getFleet"
   });
@@ -103,7 +103,7 @@ const useDynamicNFTCar = ({
       onCarPurchaseSuccess?.();
       refetchFleet();
     }
-  }, [mintSuccess, updateSuccess, saleSuccess, purchaseSuccess]);
+  }, [mintSuccess, updateSuccess, saleSuccess, purchaseSuccess]);//eslint-disable-line
 
   return {
     address,
@@ -113,7 +113,7 @@ const useDynamicNFTCar = ({
     refetchFleet,
     mintCar: (to, name, description, image, vin, location, price_usd) =>
       mintCar?.({
-        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+        address: process.env.NEXT_PUBLIC_NFT_CAR_CONTRACT_ADDRESS,
         abi,
         functionName: "safeMintWithValues",
         args: [to, name, description, image, vin, location, price_usd]
@@ -122,7 +122,7 @@ const useDynamicNFTCar = ({
     mintCarError,
     updateCar: (tokenId, mileage_km, reputation, expenses, revenue) =>
       updateCar?.({
-        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+        address: process.env.NEXT_PUBLIC_NFT_CAR_CONTRACT_ADDRESS,
         abi,
         functionName: "updateCarEOD",
         args: [tokenId, mileage_km, reputation, expenses, revenue]
@@ -131,7 +131,7 @@ const useDynamicNFTCar = ({
     updateCarError,
     saleCar: (tokenId, carMarket, listing_price_usd) =>
       saleCar?.({
-        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+        address: process.env.NEXT_PUBLIC_NFT_CAR_CONTRACT_ADDRESS,
         abi,
         functionName: "setForSale",
         args: [tokenId, carMarket, listing_price_usd]
@@ -140,7 +140,7 @@ const useDynamicNFTCar = ({
     saleCarError,
     buyCar: (tokenId, buyer, payedPrice) =>
       buyCar?.({
-        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+        address: process.env.NEXT_PUBLIC_NFT_CAR_CONTRACT_ADDRESS,
         abi,
         functionName: "buyCar",
         args: [tokenId, buyer, payedPrice]

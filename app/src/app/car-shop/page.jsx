@@ -1,78 +1,75 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Wrapper from '@/components/Wrapper';
-import CarNFT from '@/components/CarNFT';
+"use client";
+import React, { useEffect, useState } from "react";
+import Wrapper from "@/components/Wrapper";
+import CarNFT from "@/components/CarNFT";
+import useDynamicNFTCar from "@/hooks/useDynamicNFTCar";
+import useCarMarket from "@/hooks/useCarMarket";
+import { toast } from "react-toastify";
 
 const CarShop = () => {
-    const [cars, setCars] = useState([]);
+  const [cars, setCars] = useState([]);
+  const { fleet, refetchFleet, getFleetLoading, getFleetError } =
+    useDynamicNFTCar({});
+  const { buyCar, buyCarLoading, buyCarError } = useCarMarket({
+    onBuyCarSuccess: () => {
+      toast.success("Car purchased successfully!💸", {
+        position: "bottom-center",
+        className: "text-md font-medium",
+        theme: "light"
+      });
+      refetchFleet();
+    }
+  });
 
-    const demoCars = [
-      {
-        id: 1,
-        name: "Tesla Model S",
-        description: "The Tesla Model S is a fully electric luxury sedan.",
-        vin: "TX1264",
-        price: 94000,
-        mileage: 1236,
-        image:"https://images.unsplash.com/photo-1617704548623-340376564e68?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      },
-      {
-        id: 2,
-        name: "Porsche Taycan",
-        vin: "LXZ264",
-        price: 89800,
-        mileage: 686,
-        description: "The Porsche Taycan is a fully electric luxury sports car.",
-        image:"https://images.unsplash.com/photo-1627454766066-4c89c65c9d73?q=80&w=2034&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      },
-      {
-        id: 3,
-        name: "Audi e-tron",
-        vin: "PR7264",
-        price: 28000,
-        mileage: 896,
-        description: "The Audi e-tron is a fully electric luxury SUV.",
-        image:"https://images.unsplash.com/photo-1629897874832-a2e2f0d3715d?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      }
-    ];
+  useEffect(() => {
+    if (fleet) {
+      setCars(fleet);
+      console.log(fleet);
+    }
+  }, [fleet]);
 
-    useEffect(() => {
-        setCars(demoCars);
-    }, []);
-    // useEffect(() => {
-    //     const fetchCars = async () => {
-    //         try {
-    //             const response = await axios.get('/api/cars'); // Replace with your API endpoint
-    //             setCars(response.data);
-    //         } catch (error) {
-    //             console.error('Error fetching cars:', error);
-    //         }
-    //     };
+  const handleBuyCar = async (carId, price) => {
+    try{
+    await buyCar(carId, price);
+    toast.info("Buy request sent", {
+      position: "bottom-center",
+      className: "text-md font-medium",
+      theme: "light"
+    });
+    } catch(error){
+      console.log("Error buying car: ", error);
+    }
+  };
 
-    //     fetchCars();
-    // }, []);
-
-    return (
-      <Wrapper className="container mx-auto py-8 px-4 md:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-          Car Shop
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {cars.map((car) => (
+  return (
+    <Wrapper className="container mx-auto py-8 px-4 md:px-6 lg:px-8">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+        Car Shop
+      </h2>
+      {getFleetLoading && <p>Loading cars...</p>}
+      {getFleetError && <p>Error loading cars. Please try again.</p>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {cars
+          .map((car, index) => ({ ...car, id: index }))
+          .filter((car) => car.status === 1)
+          .map((car) => (
             <CarNFT
               key={car.id}
+              id={car.id}
               name={car.name}
               description={car.description}
               vin={car.vin}
-              mileage={car.mileage}
-              price={car.price}
+              mileage={car.mileage_km}
+              price={car.price_usd}
               imageURL={car.image}
+              onBuy={() => handleBuyCar(car.id, car.price_usd)}
+              buyLoading={buyCarLoading}
+              buyError={buyCarError}
             />
           ))}
-        </div>
-      </Wrapper>
-    );
+      </div>
+    </Wrapper>
+  );
 };
 
 export default CarShop;

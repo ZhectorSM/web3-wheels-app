@@ -6,23 +6,51 @@ import {
   CardHeader,
   CardTitle
 } from "./ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from "./ui/select";
 import Image from "next/image";
+import { Button } from "./ui/button";
 
-const OwnedNFT = ({ name, description, vin, imageURL, forSale, mileage, revenue, expenses }) => {
+const OwnedNFT = ({
+  name,
+  description,
+  vin,
+  imageURL,
+  status,
+  mileage,
+  revenue,
+  expenses,
+  onSetForSale,
+  saleLoading
+}) => {
+  mileage = String(mileage);
+  revenue = String(revenue);
+  expenses = String(expenses);
   return (
-    <Card className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg hover:scale-[1.02]  border hover:shadow-lg hover:shadow-zinc-400 transition">
-      <CardHeader className="flex justify-end h-fit m-0 mb-1 p-0">
-        <div className="flex-grow flex justify-end">
-          <p
-            className={`${
-              forSale
-                ? "bg-zinc-800 text-zinc-100 dark:bg-zinc-900 dark:text-zinc-100"
-                : "bg-white text-black dark:bg-gray-800 dark:text-white"
-            } rounded-xl w-fit border-1 border-zinc-400 px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 shadow`}
-          >
-            {!forSale ? "Not " : ""}For Sale
-          </p>
-        </div>
+    <Card className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg hover:scale-105 border dark:border-gray-700 hover:shadow-xl transition-transform duration-200">
+      <CardHeader className="flex justify-end items-start h-fit m-0 mb-4 p-0">
+        <p
+          className={`${
+            status === 1
+              ? "bg-green-500 text-white"
+              : 2
+              ? "bg-blue-500 text-white"
+              : "bg-red-500 text-white"
+          } rounded-full px-3 py-1 text-xs font-semibold`}
+        >
+          {status === 1
+            ? "For Sale"
+            : status === 2
+            ? "Sold"
+            : "Owned"}
+        </p>
       </CardHeader>
       <Image
         alt={name}
@@ -35,33 +63,61 @@ const OwnedNFT = ({ name, description, vin, imageURL, forSale, mileage, revenue,
         }}
         width={300}
       />
-
-      <CardTitle className="flex items-center justify-between mb-2">
-        <span>{name}</span>
-        <div className="bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 w-fit mb-1">
-          VIN: {vin}
+      <CardTitle className="mb-2 text-gray-900 dark:text-gray-100">
+        <div className="flex items-center justify-between">
+          <span>{name}</span>
+          <div className="bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 w-fit">
+            VIN: {vin}
+          </div>
         </div>
       </CardTitle>
-      <CardDescription className="mb-2">{description}</CardDescription>
+      <CardDescription className="mb-4 text-gray-700 dark:text-gray-300">
+        {description}
+      </CardDescription>
       <CardFooter className="flex flex-col gap-1 px-0">
-        <div className="flex items-center p-1 px-2 rounded-md bg-zinc-100 w-full justify-between mb-2 text-gray-500 dark:text-gray-400">
+        <div className="flex items-center p-1 px-2 rounded-md bg-zinc-100 dark:bg-gray-700 w-full justify-between mb-1 text-gray-500 dark:text-gray-400">
           <div>Revenue</div>
           <div className="text-gray-800 dark:text-gray-100 font-medium">
             ${revenue}
           </div>
         </div>
-        <div className="flex items-center p-1 px-2 rounded-md bg-zinc-100 w-full justify-between mb-2 text-gray-500 dark:text-gray-400">
+        <div className="flex items-center p-1 px-2 rounded-md bg-zinc-100 dark:bg-gray-700 w-full justify-between mb-1 text-gray-500 dark:text-gray-400">
           <div>Expenses</div>
           <div className="text-gray-800 dark:text-gray-100 font-medium">
             ${expenses}
           </div>
         </div>
-        <div className="flex items-center p-1 px-2 rounded-md bg-zinc-100 w-full justify-between text-gray-500 dark:text-gray-400">
+        <div className="flex items-center p-1 px-2 rounded-md bg-zinc-100 dark:bg-gray-700 w-full justify-between mb-1 text-gray-500 dark:text-gray-400">
           <div>Mileage</div>
           <div className="text-gray-800 dark:text-gray-100 font-medium">
             {mileage} km
           </div>
         </div>
+        <Select className="w-full mb-4">
+          <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-700">
+            <SelectValue placeholder="Operating Mode" />
+          </SelectTrigger>
+          <SelectContent className="bg-white dark:bg-gray-800">
+            <SelectGroup>
+              <SelectLabel>Operating Mode</SelectLabel>
+              <SelectItem value="min-wait-time">Minimize Wait Time</SelectItem>
+              <SelectItem value="max-passenger">Maximize Passengers</SelectItem>
+              <SelectItem value="min-expenses">Minimize Expenses</SelectItem>
+              <SelectItem value="max-revenue">Maximize Revenue</SelectItem>
+              <SelectItem value="nearby">Stay Near Home</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Button className="w-full mb-2">Update Mode</Button>
+        {status !== "FOR_SALE" && (
+          <Button
+            onClick={onSetForSale}
+            disabled={saleLoading}
+            className="w-full"
+          >
+            {saleLoading ? "Setting for Sale..." : "Set for Sale"}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

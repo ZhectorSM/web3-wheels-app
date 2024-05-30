@@ -208,6 +208,87 @@
 		"inputs": [
 			{
 				"indexed": false,
+				"internalType": "string",
+				"name": "action",
+				"type": "string"
+			},
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "image",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "vin",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "location",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "mileage_km",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "reputation",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price_usd",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "revenue",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "expenses",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum CarStatus",
+						"name": "status",
+						"type": "uint8"
+					}
+				],
+				"indexed": false,
+				"internalType": "struct NFTStorage.Car",
+				"name": "car",
+				"type": "tuple"
+			}
+		],
+		"name": "CarEvent",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "_tokenId",
 				"type": "uint256"
@@ -318,6 +399,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "CONSUMER_ROLE",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "DEFAULT_ADMIN_ROLE",
 		"outputs": [
 			{
@@ -383,17 +477,17 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			},
 			{
 				"internalType": "address",
-				"name": "buyer",
+				"name": "_buyer",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "payedPrice",
+				"name": "_payedPrice",
 				"type": "uint256"
 			}
 		],
@@ -448,9 +542,9 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "uint8",
+				"internalType": "uint256",
 				"name": "reputation",
-				"type": "uint8"
+				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
@@ -537,9 +631,9 @@
 						"type": "uint256"
 					},
 					{
-						"internalType": "uint8",
+						"internalType": "uint256",
 						"name": "reputation",
-						"type": "uint8"
+						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
@@ -562,7 +656,7 @@
 						"type": "uint8"
 					}
 				],
-				"internalType": "struct DynamicNFTCar.Car[]",
+				"internalType": "struct NFTStorage.Car[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -732,32 +826,32 @@
 			},
 			{
 				"internalType": "string",
-				"name": "name",
+				"name": "_name",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "description",
+				"name": "_description",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "image",
+				"name": "_image",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "vin",
+				"name": "_vin",
 				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "location",
+				"name": "_location",
 				"type": "string"
 			},
 			{
 				"internalType": "uint256",
-				"name": "price_usd",
+				"name": "_price_usd",
 				"type": "uint256"
 			}
 		],
@@ -839,7 +933,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			},
 			{
@@ -849,7 +943,7 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "listing_price_usd",
+				"name": "_listing_price_usd",
 				"type": "uint256"
 			}
 		],
@@ -936,27 +1030,27 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "mileage_km",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint8",
-				"name": "reputation",
-				"type": "uint8"
-			},
-			{
-				"internalType": "uint256",
-				"name": "expenses",
+				"name": "_mileage_km",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "revenue",
+				"name": "_reputation",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_expenses",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_revenue",
 				"type": "uint256"
 			}
 		],

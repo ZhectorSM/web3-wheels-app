@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { Connect } from "./ui/Connect";
 import { usePathname } from "next/navigation";
-import CarIcon from "./ui/CarIcon";
+import CarIcon from "./icons/car";
 const Header = () => {
 
 const pathname = usePathname();
   return (
-    <nav className="bg-zinc-900">
+    <nav className="relative bg-black z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
@@ -21,13 +21,13 @@ const pathname = usePathname();
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <Link href="/mint-car">
+                <Link href="/mint-cars">
                   <p
                     className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
-                      pathname === "/mint-car" ? " text-white" : ""
+                      pathname === "/mint-cars" ? " text-white" : ""
                     }`}
                   >
-                    MINT A CAR
+                    Mint A Car
                   </p>
                 </Link>
                 <Link href="/car-shop">
@@ -35,7 +35,7 @@ const pathname = usePathname();
                     className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
                     pathname === "/car-shop" ? " text-white" : ""}`}
                   >
-                    CAR SHOP
+                    Car Shop
                   </p>
                 </Link>
                 <Link href="/book-ride">
@@ -43,7 +43,7 @@ const pathname = usePathname();
                     className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
                     pathname === "/book-ride" ? " text-white" : ""}`}
                   >
-                    BOOK A RIDE
+                    Book A Ride
                   </p>
                 </Link>
                 <Link href="/dashboard">
@@ -51,7 +51,7 @@ const pathname = usePathname();
                     className={`text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium ${
                     pathname === "/dashboard" ? " text-white" : ""}`}
                   >
-                    DASHBOARD
+                    Dashboard
                   </p>
                 </Link>
               </div>

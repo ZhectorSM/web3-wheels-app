@@ -1,5 +1,5 @@
 import { DM_Sans } from "next/font/google";
-
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 import Header from "../components/Header";
 import Web3Providers from "./providers";
@@ -21,9 +21,16 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={dmSans.className}>
         <Web3Providers>
-          <Header />
-          {children}
-          <ToastContainer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            {children}
+            <ToastContainer />
+          </ThemeProvider>
         </Web3Providers>
       </body>
     </html>
