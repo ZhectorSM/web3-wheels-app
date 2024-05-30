@@ -13,7 +13,6 @@ const { deployRandomNumberConsumer } = require("./deployRandomNumberConsumer");
 const { deployRandomNumberDirectFundingConsumer } = require("./deployRandomNumberDirectFundingConsumer");
 const { deployDynamicNFTCar } = require("./deployDynamicNFTCar");
 const { deployWeb3Wheels } = require("./deployWeb3Wheels");
-const { deployEodCarApiConsumer } = require("./deployEodCarApiConsumer");
 
 async function main() {
     await run("compile");
@@ -28,8 +27,7 @@ async function main() {
 
     //Web3Wheels
     //await deployDynamicNFTCar(chainId);
-    //await deployWeb3Wheels(chainId);
-    await deployEodCarApiConsumer(chainId);
+    await deployWeb3Wheels(chainId);
 
 }
 

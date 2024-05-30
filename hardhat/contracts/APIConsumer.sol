@@ -100,12 +100,4 @@ contract APIConsumer is ChainlinkClient {
      * @dev Implement a withdraw function to avoid locking your LINK in the contract
      */
     function withdrawLink() external {}
-
-    /**
-     * Only for testing on local chain purpouse
-     * Have to manually update the value since we're on a local chain
-     */
-    function setVolume(uint _hardcodedVolume) public {
-        volume = _hardcodedVolume;
-    }
 }

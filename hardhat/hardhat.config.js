@@ -5,11 +5,11 @@ require("dotenv").config();
 const COMPILER_SETTINGS = {
     optimizer: {
         enabled: true,
-        runs: 1000,
+        runs: 1000000,
     },
     metadata: {
         bytecodeHash: "none",
-    },    
+    },
 };
 
 const MAINNET_RPC_URL =
@@ -29,7 +29,6 @@ const FORKING_BLOCK_NUMBER = parseInt(process.env.FORKING_BLOCK_NUMBER) || 0;
 // Your API key for Etherscan, obtain one at https://etherscan.io/
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key";
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key";
-const SCROLLSCAN_API_KEY = process.env.SCROLLSCAN_API_KEY || "Your polygonscan API key";
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
 
 
@@ -77,14 +76,14 @@ module.exports = {
             //   },
             chainId: 11155111,
         },
-        mainnet: {
+        /*mainnet: {
             url: MAINNET_RPC_URL,
             accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
             //   accounts: {
             //     mnemonic: MNEMONIC,
             //   },
             chainId: 1,
-        },
+        },*/
         polygon: {
             url: POLYGON_MAINNET_RPC_URL,
             accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
@@ -95,13 +94,8 @@ module.exports = {
             accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
             chainId: 80001,
         },
-        scrollTestnet: {
-            url: process.env.SCROLL_TESTNET_URL || "",
-            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
-            chainId: 534351,
-        },
     },
-    defaultNetwork: "localhost",    
+    defaultNetwork: "localhost",
     etherscan: {
         // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
         apiKey: {
@@ -110,7 +104,6 @@ module.exports = {
             mainnet: ETHERSCAN_API_KEY,
             polygon: POLYGONSCAN_API_KEY,
             polygonMumbai: POLYGONSCAN_API_KEY,
-            scrollTestnet: SCROLLSCAN_API_KEY,
         },
     },
     gasReporter: {
