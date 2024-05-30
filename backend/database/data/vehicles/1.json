@@ -1,15 +1,15 @@
 {
   "tokenId": 1,
-  "owner": "NftCar1",
-  "name": "Audio",
-  "description": "Self driving car",
+  "owner": "0x2DBD3E57ae2e4E969f85E74b0374C062014De504",
+  "name": "BeMeWe",
+  "description": "Self spinning car",
   "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
   "vin": "WAUKEAFM8DA033285",
-  "location": "3.80,-12.645",
-  "mileage_km": 11000,
-  "reputation": 6,
-  "price_usd": 50000,  
-  "expenses": 20,
-  "revenue": 75,
-  "stats": [1, 11000, 6, 50000, 20, 75]
+  "location": "40.75603712675692,-73.98416203722446",
+  "mileage_km": 111000,
+  "reputation": 8,
+  "price_usd": 22000,  
+  "expenses": 135,
+  "revenue": 358,
+  "stats": [1, 111000, 8, 135, 358]
 }
