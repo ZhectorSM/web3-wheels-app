@@ -1,0 +1,30 @@
+{
+  "name": "vw_Beattle",
+  "description": "First autonomous beattle",
+  "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N?filename=vw_beattle.png",
+  "year": 2021,
+  "attributes" : [
+	{
+		"trait_type": "mileage_km",
+		"value": 20000
+	},
+	{
+		"trait_type": "reputation",
+		"value": 5
+	},
+	{
+		"trait_type": "maintenance",
+		"value": 2
+	},
+	{
+		"trait_type": "price_wei",
+		"value": 16326955000000000000
+	},
+	{
+		"trait_type": "color",
+		"value": "#FDE47A"
+	}
+  ] 
+}
+
+
