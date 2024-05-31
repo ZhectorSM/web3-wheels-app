@@ -7,8 +7,8 @@ import { useMemo, useRef } from "react";
 const Map = ({
   location1,
   onMarker1Change,
-  location2,
-  onMarker2Change,
+  location2 = null,
+  onMarker2Change = null,
   firstLocationName
 }) => {
   const customIcon1 = new Icon({
@@ -34,10 +34,8 @@ const Map = ({
         }
       }
     }),
-    []//eslint-disable-line
+    [onMarker1Change]
   );
-
-  const bounds = [location1, location2];
 
   const eventHandlers2 = useMemo(
     () => ({
@@ -45,12 +43,16 @@ const Map = ({
         const marker2 = marker2Ref.current;
         if (marker2 != null) {
           const { lat, lng } = marker2.getLatLng();
-          onMarker2Change([lat, lng]);
+          if (onMarker2Change) {
+            onMarker2Change([lat, lng]);
+          }
         }
       }
     }),
-    []//eslint-disable-line
+    [onMarker2Change]
   );
+
+  const bounds = [location1, location2].filter(Boolean);
 
   return (
     <MapContainer
@@ -61,7 +63,7 @@ const Map = ({
       maxBoundsViscosity={1.0}
     >
       <TileLayer
-        url="https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png" // map api
+        url="https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png"
         attribution="&copy; Map"
       />
       <MarkerClusterGroup chunkedLoading>

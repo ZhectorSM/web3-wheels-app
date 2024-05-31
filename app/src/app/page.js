@@ -1,5 +1,6 @@
-"use client";
+"use client"
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   CardTitle,
   CardDescription,
@@ -12,29 +13,48 @@ import WalletIcon from "@/components/icons/wallet";
 import DollarSignIcon from "@/components/icons/dollar-sign";
 import TruckIcon from "@/components/icons/truck";
 import UsersIcon from "@/components/icons/users";
-import Spline from "@splinetool/react-spline";
 import getScene from "@/utils/3dModel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+
+const Spline = dynamic(() => import("@splinetool/react-spline"), {
+  ssr: false
+});
 
 export default function Home() {
   const sceneURL = getScene();
   const [loading, setLoading] = useState(true);
+  const [dots, setDots] = useState("");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prevDots) => (prevDots.length < 3 ? prevDots + "." : ""));
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
 
   const show = () => {
-    setTimeout(setLoading(false), 3000);
-  }
+    const timeout = setTimeout(() => setLoading(false), 4000);
+    return () => clearTimeout(timeout);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
       {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
-          <p>Loading...</p>
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black z-50">
+          <Image
+            src="/loading-logo.png"
+            alt="Web3 Wheels"
+            height={250}
+            width={250}
+          />
+          <p className="text-white">Loading{dots}</p>
         </div>
       )}
       <main
-        className={`flex-1 z-10 ${
+        className={`flex-1 z-10 transition-opacity duration-500 ${
           loading ? "opacity-0" : "opacity-100"
-        } transition-opacity duration-500`}
+        }`}
       >
         <section className="relative w-full h-screen bg-transparent select-none py-16 md:py-24 lg:py-32 xl:py-44 z-10">
           <Spline
@@ -103,13 +123,6 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-              {/* <Image
-                alt="Image"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
-                height="310"
-                src="/placeholder.svg"
-                width="550"
-              /> */}
             </div>
           </div>
         </section>

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Wrapper from "@/components/Wrapper";
-import Map from "@/components/Map";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import {
@@ -25,6 +25,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+
+const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 function BookRidePage() {
   const [pickupLocation, setPickupLocation] = useState([40.74005, -73.986562]);

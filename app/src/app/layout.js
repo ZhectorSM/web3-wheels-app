@@ -13,13 +13,13 @@ const dmSans = DM_Sans({
 
 export const metadata = {
   title: "Web3 Wheels",
-  description: "travel smarter"
+  description: "Decentralized Autonomous Vehicles",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={dmSans.className}>
+    <html lang="en" className={dmSans.variable}>
+      <body>
         <Web3Providers>
           <ThemeProvider
             attribute="class"

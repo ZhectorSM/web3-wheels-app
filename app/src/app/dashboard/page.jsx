@@ -69,16 +69,6 @@ export default function Dashboard() {
       };
   };
 
-  console.log(
-    "Car Market Contract Address:",
-    process.env.NEXT_PUBLIC_CAR_MARKET_CONTRACT_ADDRESS
-  );
-  console.log(
-    "NFT Car Contract Address:",
-    process.env.NEXT_PUBLIC_NFT_CAR_CONTRACT_ADDRESS
-  );
-
-
   const dextools = async () => {
     try {
       const res = await axios.get(
