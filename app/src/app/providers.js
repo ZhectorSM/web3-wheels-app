@@ -3,7 +3,7 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { mainnet, polygon, sepolia} from "wagmi/chains";
+import { mainnet, polygon, sepolia, scrollSepolia} from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 const config = getDefaultConfig ({
   appName: "Web3 Wheels",
   projectId: process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID ?? "",
-  chains: [mainnet, polygon, sepolia],
+  chains: [mainnet, polygon, sepolia, scrollSepolia],
 });
 
 const Web3Providers = ({children}) => {
