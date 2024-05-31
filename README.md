@@ -15,6 +15,7 @@ Web3Wheels is a decentralized autonomous Uber service utilizing blockchain and A
 - [Installation](#installation)
 - [Usage](#usage)
 - [Architecture](#architecture)
+- [Diagrams](#diagrams)  
 - [Smart Contracts](#smart-contracts)
 - [Additional Information](#additional-information)
 - [Technologies](#technologies)
@@ -76,13 +77,17 @@ Web3Wheels comprises the following components:
 - **Chainlink**: Fetches datafeeds, verifies dealer legitimacy and pull data from an API
 
 ![Overview](https://github.com/ZhectorSM/web3-wheels-app/blob/main/resources/docs/Components.png?raw=true)
-### Processes On/Off Chain
+### On/Off Chain
 ![Components](https://github.com/ZhectorSM/web3-wheels-app/blob/main/resources/docs/Overview.png?raw=true)
 
 
 ### Data Flow
 
 ![Data flow](https://github.com/ZhectorSM/web3-wheels-app/blob/main/resources/docs/web3%20wheels%20flow.png?raw=true)
+
+### Diagrams
+
+https://www.canva.com/design/DAGDwoF3eh8/LorvlEGzAxx7BUwxNWLtTQ/view?utm_content=DAGDwoF3eh8&utm_campaign=designshare&utm_medium=link&utm_source=editor
 
 ## SmartContracts
 SEPOLIA
@@ -102,7 +107,6 @@ SEPOLIA
 - Web3Wheels EOD  https://sepolia.etherscan.io/address/0xdd80c0bfc95af6b3e0a0915bdf559352f73b947a (Upkeep Every 24 hrs)
 
 ![Smart Contracts](https://github.com/ZhectorSM/web3-wheels-app/blob/main/resources/docs/Smart%20contracts.png?raw=true)
-
 
 ## Additional Information
 
@@ -134,5 +138,3 @@ The code in this project is licensed under the MIT License. See the LICENSE file
 https://github.com/smartcontractkit/hardhat-starter-kit.git (Updated to ethers-v6)
 
 https://github.com/tomhirst/solidity-nextjs-starter.git
-
-```
