@@ -42,13 +42,13 @@ const OwnedNFT = ({
               ? "bg-green-500 text-white"
               : 2
               ? "bg-blue-500 text-white"
-              : "bg-red-500 text-white"
+              : "bg-zinc-700 text-white"
           } rounded-full px-3 py-1 text-xs font-semibold`}
         >
           {status === 1
             ? "For Sale"
             : status === 2
-            ? "Sold"
+            ? "New"
             : "Owned"}
         </p>
       </CardHeader>
