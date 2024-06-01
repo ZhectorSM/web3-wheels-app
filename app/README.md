@@ -32,7 +32,7 @@ Navigate to the project directory and install all required dependencies:
 
 ```Bash
 cd app
-yarn install
+yarn
 ``` (or `npm install`)
 ```
 
