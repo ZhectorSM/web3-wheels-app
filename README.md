@@ -83,7 +83,8 @@ Web3Wheels comprises the following components:
 
 ### Data Flow
 
-![Data flow](https://github.com/ZhectorSM/web3-wheels-app/blob/main/resources/docs/web3%20wheels%20flow.png?raw=true)
+![Data Flow](https://github.com/ZhectorSM/web3-wheels-app/assets/114948140/b8ab368e-0d9c-4315-a9aa-cb7c617c55b3)
+
 
 ### Diagrams
 
