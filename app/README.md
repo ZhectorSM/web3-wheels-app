@@ -3,13 +3,13 @@
 
 ### Project Description
 
-This frontend application is built using a modern technology stack of Next.js, TailwindCSS, Shaden, Wagmi, Viem, RainbowKit, and Spline, enabling users to interact seamlessly with the project's blockchain backend and visualize simulations on Leaflet openstreet maps. Additionally, real-time price conversions are fetched via the Dextools API for an enriched user experience. Notably, the user interface incorporates Spline for a captivating 3D model on the main page, fostering a visually engaging and interactive environment.
+This frontend application is built using a modern technology stack of Next.js, TailwindCSS, Shadcn, Wagmi, Viem, RainbowKit, and Spline, enabling users to interact seamlessly with the project's blockchain backend and visualize simulations on Leaflet openstreet maps. Additionally, real-time price conversions are fetched via the Dextools API for an enriched user experience. Notably, the user interface incorporates Spline for a captivating 3D model on the main page, fostering a visually engaging and interactive environment.
 
 ### Technology Stack
 
 Next.js: A React-based framework for building server-rendered and statically generated web applications.
 TailwindCSS: A utility-first CSS framework for rapid development and customization.
-Shaden: A UI component library for consistency and efficiency (if applicable).
+Shadcn: A UI component library for consistency and efficiency (if applicable).
 Wagmi & Viem: A library for simplified integration with Ethereum wallets and smart contracts.
 RainbowKit: A lightweight provider and hooks for integrating with various Ethereum and NFT providers.
 Leaflet: An open-source JavaScript library for interactive maps.
