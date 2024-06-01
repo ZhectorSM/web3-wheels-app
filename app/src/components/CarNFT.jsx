@@ -55,7 +55,7 @@ const CarNFT = ({
           onClick={onBuy}
           disabled={buyLoading}
         >
-          {buyLoading ? "Buying..." : `Buy for ${price} USDC`}
+          {buyLoading ? "Buying..." : `Buy for $${price}`}
         </Button>
       </CardFooter>
     </Card>

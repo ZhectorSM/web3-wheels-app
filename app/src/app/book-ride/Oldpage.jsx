@@ -14,51 +14,19 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import axios from "axios";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 
 const BookMap = dynamic(() => import("@/components/BookMap"), { ssr: false });
-
-const mockVehicles = [
-  {
-    vehicleId: 1,
-    name: "Thezla",
-    vin: "LM4AC113061105688",
-    reputation: 7,
-    revenue: 524,
-    mileage_km: 60000,
-    expenses: 350,
-    position: { latitude: 40.7391, longitude: -73.9905 }
-  },
-  {
-    vehicleId: 2,
-    name: "BeMeWe",
-    vin: "WAUKEAFM8DA033285",
-    mileage_km: 111000,
-    expenses: 135,
-    reputation: 8,
-    revenue: 358,
-    position: { latitude: 40.7457, longitude: -73.9985 }
-  },
-  {
-    vehicleId: 3,
-    name: "Knight Rider",
-    vin: "KITT19820KS005705",
-    mileage_km: 25000,
-    reputation: 9,
-    expenses: 120,
-    revenue: 200,
-    position: { latitude: 40.7503, longitude: -73.9835 }
-  },
-  {
-    vehicleId: 4,
-    name: "Mircidis",
-    vin: "LM4AC113061sdas105688",
-    mileage_km: 6009,
-    reputation: 8,
-    expenses: 40,
-    revenue: 109,
-    position: { latitude: 40.7321, longitude: -73.9735 }
-  }
-];
 
 function BookRidePage() {
   const [pickupLocation, setPickupLocation] = useState([40.74005, -73.986562]);
@@ -68,10 +36,6 @@ function BookRidePage() {
   const [vehicles, setVehicles] = useState([]);
   const [passengerId, setPassengerId] = useState(1);
   const [ridePayment, setRidePayment] = useState(0);
-  const [eta, setEta] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [rideBooked, setRideBooked] = useState(false);
-  const [nearestVehicle, setNearestVehicle] = useState(null);
 
   const date = new Date();
   const options = { day: "numeric", month: "long", year: "numeric" };
@@ -107,10 +71,6 @@ function BookRidePage() {
     fetchData();
   }, [dropLocation]);
 
-  useEffect(() => {
-    setVehicles(mockVehicles);
-  }, []);
-
   const handlePickupLocationChange = (pickupLocation) => {
     setPickupLocation(pickupLocation);
   };
@@ -119,57 +79,50 @@ function BookRidePage() {
     setDropLocation(dropLocation);
   };
 
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // km
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon1 - lon2) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const findNearestVehicle = () => {
-    let nearest = null;
-    let minDistance = Infinity;
-
-    vehicles.forEach((vehicle) => {
-      const distance = getDistance(
-        vehicle.position.latitude,
-        vehicle.position.longitude,
-        pickupLocation[0],
-        pickupLocation[1]
+  const fetchVehicle = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/sim/vehicles`
       );
-      if (distance < minDistance) {
-        nearest = vehicle;
-        minDistance = distance;
-      }
-    });
-
-    return nearest;
-  };
+      setVehicles(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  fetchVehicle();
 
   const bookRide = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/sim/passengers`,
+        {
+          passengerId: passengerId,
+          name: "John Doe",
+          pickup: {
+            position: {
+              longitude: pickupLocation[1],
+              latitude: pickupLocation[0]
+            }
+          },
+          dropoff: {
+            position: {
+              longitude: dropLocation[1],
+              latitude: dropLocation[0]
+            }
+          }
+        }
+      );
+      console.log(response.data);
 
-    const nearestVehicle = findNearestVehicle();
-
-    setTimeout(() => {
-      setRidePayment(Math.floor(Math.random() * 50) + 3);
-      setEta(Math.floor(Math.random() * 15) + 3);
+      setRidePayment(response.data.passenger.ridePrice);
       toast.success("Ride booked successfully!");
       setPassengerId(passengerId + 1);
-      setLoading(false);
-      setRideBooked(true);
-      setNearestVehicle(nearestVehicle);
-    }, 2000);
-  };
-
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <Wrapper className="grid grid-cols-7 justify-center gap-6 p-10 px-28 dark:bg-gray-900">
@@ -189,6 +142,24 @@ function BookRidePage() {
                 Passenger: {passengerId}
               </span>
             </Button>
+            {/* <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline">Show Dialog</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog> */}
           </div>
         </CardHeader>
         <CardContent className="p-5 text-sm dark:text-gray-300">
@@ -231,25 +202,34 @@ function BookRidePage() {
               </div>
             </div>
           </div>
-          <Separator className="my-3" />
-          <ul className="grid gap-2 text-sm text-muted-foreground dark:text-gray-400">
+          <Separator className="my-3 dark:bg-gray-700" />
+          <ul className="grid gap-2">
             <li className="flex items-center justify-between">
-              <span className="col-span-1">ETA</span>
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {loading ? "Calculating..." : `${eta} mins`}
+              <span className="text-muted-foreground dark:text-gray-400">
+                Estimated Price
               </span>
+              <span>{ridePayment}{" "} $USDC</span>
             </li>
             <li className="flex items-center justify-between">
-              <span className="col-span-1">Ride Price</span>
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {loading ? "Calculating..." : `${ridePayment} $USD`}
+              <span className="text-muted-foreground dark:text-gray-400">
+                ETA
               </span>
+              <span>25 minutes</span>
+            </li>
+          </ul>
+          <Separator className="my-2 dark:bg-gray-700" />
+          <ul className="grid gap-2">
+            <li className="flex items-center justify-between font-semibold">
+              <span className="text-muted-foreground dark:text-gray-400">
+                Total
+              </span>
+              <span>{ridePayment}{" "}$USDC</span>
             </li>
           </ul>
         </CardContent>
         <CardFooter className="pb-6 dark:bg-gray-800">
           <Button
-            className="w-full bg-zinc-900 text-gray-50 hover:bg-zinc-900/80 focus-visible:ring-zinc-900 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-zinc-800 hover:shadow-md hover:shadow-zinc-400 transition duration-75 active:bg-black active:translate-x-0.5 active:translate-y-0.5"
+            className="w-full bg-zinc-900 text-gray-50 hover:bg-zinc-900/80 focus-visible:ring-zinc-900 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
             onClick={(e) => bookRide(e)}
           >
             Book Now
@@ -264,8 +244,6 @@ function BookRidePage() {
           onMarker2Change={handleDropLocationChange}
           firstLocationName={"Pick up"}
           vehicles={vehicles}
-          rideBooked={rideBooked}
-          nearestVehicle={nearestVehicle}
         />
       </div>
     </Wrapper>

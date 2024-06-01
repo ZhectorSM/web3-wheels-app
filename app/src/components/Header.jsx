@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Connect } from "./ui/Connect";
 import { usePathname } from "next/navigation";
-import CarIcon from "./icons/car";
+import Image from "next/image";
 const Header = () => {
 
 const pathname = usePathname();
@@ -13,8 +13,9 @@ const pathname = usePathname();
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Link href="/">
-                <p className="text-white flex gap-1 font-bold text-xl">
-                    <CarIcon />
+                <p className="text-white flex items-center gap-1 font-bold text-xl">
+                    {/* <CarIcon /> */}
+                    <Image src="/Logo.png" alt="Web3 Wheels" width={30} height={30} /> 
                   Web3 Wheels
                 </p>
               </Link>

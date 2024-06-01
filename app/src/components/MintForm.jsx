@@ -157,7 +157,7 @@ export default function MintForm({
             <p className="font-medium text-sm text-red-600 dark:text-red-400">
               {mintError && "There was some error"}
             </p>
-            <Button className="bg-slate-900 dark:bg-blue-900" onClick={onSubmit}>
+            <Button className="w-full bg-zinc-900 text-gray-50 hover:bg-zinc-900/80 focus-visible:ring-zinc-900 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-zinc-800 hover:shadow-md hover:shadow-zinc-400 transition duration-75 active:bg-black active:translate-x-0.5 active:translate-y-0.5" onClick={onSubmit}>
               {mintLoading ? "Minting..." : "Mint"}
             </Button>
           </div>

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import OwnedNFT from "@/components/OwnedNFT";
 import StatsCard from "@/components/StatsCard";
 import DollarSignIcon from "@/components/icons/dollar-sign";
@@ -8,14 +8,9 @@ import UsersIcon from "@/components/icons/users";
 import ActivityIcon from "@/components/icons/activity";
 import { toast } from "react-toastify";
 import useDynamicNFTCar from "@/hooks/useDynamicNFTCar";
+import axios from "axios";
 
 export default function Dashboard() {
-  const [totals, setTotals] = useState({
-    revenue: 0,
-    expenses: 0,
-    mileage: 0
-  });
-
   const {
     address,
     fleet,
@@ -63,27 +58,6 @@ export default function Dashboard() {
     }
   }, [address, refetchFleet]); //eslint-disable-line
 
-  useEffect(() => {
-    if (fleet && fleet.length > 0) {
-      const ownedNFTs = fleet.filter((nft) => nft.owner === address);
-      const totalRevenue = ownedNFTs.reduce((sum, nft) => sum + Number(String(nft.revenue)), 0);
-      const totalExpenses = ownedNFTs.reduce(
-        (sum, nft) => sum + Number(String(nft.expenses)),
-        0
-      );
-      const totalMileage = ownedNFTs.reduce(
-        (sum, nft) => sum + Number(String(nft.mileage_km)),
-        0
-      );
-
-      setTotals({
-        revenue: totalRevenue,
-        expenses: totalExpenses,
-        mileage: totalMileage
-      });
-    }
-  }, [fleet, address]);
-
   const handleSetForSale = async (carId, listingPrice) => {
     const price =
       typeof listingPrice === "bigint" ? Number(listingPrice) : listingPrice;
@@ -94,10 +68,24 @@ export default function Dashboard() {
         process.env.NEXT_PUBLIC_CAR_MARKET_CONTRACT_ADDRESS,
         price
       );
-
-      console.log(`Setting car with ID ${carId} for sale at price ${price}`);
     } catch (error) {
       console.error("Error setting car for sale:", error);
+    }
+  };
+
+  const dextools = async () => {
+    try {
+      const res = await axios.get(
+        "https://public-api.dextools.io/free/v2/blockchains",
+        {
+          headers: {
+            "x-api-key": process.env.NEXT_PUBLIC_DEXTOOLS_API_KEY
+          }
+        }
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -110,21 +98,16 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto py-8 pb-14 px-4 md:px-6 lg:px-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard title="Total Revenue" value={totals.revenue} up="20.47">
+        <StatsCard title="Total Revenue" value="$4,951" up="20.47">
           <DollarSignIcon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
         </StatsCard>
-        <StatsCard title="Total Expenses" value={totals.expenses} up="14.93">
+        <StatsCard title="Total Expenses" value="$1,436" up="14.93">
           <CreditCardIcon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
         </StatsCard>
-        <StatsCard
-          title="Total Passengers"
-          value="37"
-          up="31.24"
-          passenger={true}
-        >
+        <StatsCard title="Total Passengers" value="57" up="31.24">
           <UsersIcon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
         </StatsCard>
-        <StatsCard title="Total Mileage" value={totals.mileage} up="28.13">
+        <StatsCard title="Total Mileage" value="81 km" up="28.13">
           <ActivityIcon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
         </StatsCard>
       </div>
@@ -142,9 +125,9 @@ export default function Dashboard() {
               fleet
                 .map((nft, index) => ({ ...nft, id: index }))
                 .filter((nft) => nft.owner === address)
-                .map((nft, index) => (
+                .map((nft) => (
                   <OwnedNFT
-                    key={index}
+                    key={nft.id}
                     name={nft.name}
                     description={nft.description}
                     imageURL={nft.image}

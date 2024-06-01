@@ -45,11 +45,7 @@ const OwnedNFT = ({
               : "bg-red-500 text-white"
           } rounded-full px-3 py-1 text-xs font-semibold`}
         >
-          {status === 1
-            ? "For Sale"
-            : status === 2
-            ? "Sold"
-            : "Owned"}
+          {status === 1 ? "For Sale" : status === 2 ? "New" : "Owned"}
         </p>
       </CardHeader>
       <Image
@@ -113,7 +109,7 @@ const OwnedNFT = ({
           <Button
             onClick={onSetForSale}
             disabled={saleLoading}
-            className="w-full"
+            className="w-full bg-zinc-900 text-gray-50 hover:bg-zinc-900/80 focus-visible:ring-zinc-900 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-zinc-800 hover:shadow-md hover:shadow-zinc-400 transition duration-75 active:bg-black active:translate-x-0.5 active:translate-y-0.5"
           >
             {saleLoading ? "Setting for Sale..." : "Set for Sale"}
           </Button>
