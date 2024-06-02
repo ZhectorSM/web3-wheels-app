@@ -1,14 +1,36 @@
-<br/>
-<p align="center">
+# Web3Wheels Smart Contracts
+
+The next diagram depicts the interconnected smart contracts and their key functions within the system:
+
+- **NFTStorage:**
+    This contract is utilized by the Dynamic NFTs for storage purposes.
+
+- **DynamicNFTCar:**
+    Uses the ERC721 standard and OpenZeppelin.
+    It manages functions like minting, role management, and NFT ownership transfers.
+
+- **CarMarket:**
+    This contract facilitates the processes of selling, buying, and fund transfers related to cars within the system.
+
+- **PriceConverter:**
+    Utilizing Chainlink Datafeed, this component queries and converts prices within the system.
+
+- **CarEodDataConsumer:**
+    Responsible for calling backend APIs using Chainlink, updating dynamic NFTs, and implementing Chainlink Automation.
+
+![Smart Contracts](https://github.com/ZhectorSM/web3-wheels-app/blob/main/resources/docs/Smart%20contracts.png?raw=true)
+
+
+---
+
+
+# Starter kit Taken from [smartcontractkit/hardhat-starter-kit](https://github.com/smartcontractkit/hardhat-starter-kit.git) and Updated to ethers-v6
+
+<p align="left">
 <a href="https://chain.link" target="_blank">
-<img src="./box-img-lg.png" width="225" alt="Chainlink Hardhat logo">
+<img src="./box-img-lg.png" width="100" alt="Chainlink Hardhat logo">
 </a>
 </p>
-<br/>
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/smartcontractkit/hardhat-starter-kit)
-
-[![GitPOAP Badge](https://public-api.gitpoap.io/v1/repo/smartcontractkit/hardhat-starter-kit/badge)](https://www.gitpoap.io/gp/649)
 
 - [Chainlink Hardhat Starter Kit](#chainlink-hardhat-starter-kit)
 - [Getting Started](#getting-started)
@@ -459,14 +481,3 @@ To exit Echidna type
 ```bash
 exit
 ```
-
-# Contributing
-
-Contributions are always welcome! Open a PR or an issue!
-
-# Thank You!
-
-## Resources
-
-- [Chainlink Documentation](https://docs.chain.link/)
-- [Hardhat Documentation](https://hardhat.org/getting-started/)
