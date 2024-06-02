@@ -1,0 +1,59 @@
+Here are the contracts brief description and addreses (ETH Sepolia Testnet)
+
+PriceConverter (0x39F5ea379869BA250928A004E2901CE09d358380)
+	Use Chainlink DataFeeds to get the ETH/USD pair and converts the paid price when buying a vehicle
+	
+NFTStorage - Utilities for the Dynamic NFT contract
+
+DynamicNFT  (0x6311652D58db22D3196924B9b144738C2598C439)
+	Performs the main actions of teh NFTs
+	
+	SafeMintWithValues (only minter or admin)
+		To - Address of the car owner
+		Name - Name of the car
+		Description - Description of the car
+		Image - Url of the IPFS image
+		VIN - Vehicle Identification Number (17 char)
+		Location - String containing latitud and longitud of the home location
+		PriceUSD - Price of the car set from the dealer
+	SetForSale (only owner)
+		TokenId - Identifier of the car to ser for sale
+		CarMarket - Address of the seller (The addres of the carMarket contract for this use case) 
+		ListingPriceUSD - Listing price of the car (Updates PriceUSD)
+	BuyCar
+		This is call from the carMarket contract and transfer the ownership
+		
+CarMarket  (0xbA7A5104C197FbDd8D3bBc61Bb143D37150d5FD4)
+	Entity to perform the sale and transfer the funds
+	
+	Buy car
+		TokenId - TokenId of the car to be bought	
+	
+CarEodDataConsumer (0x77785A8619a7Fe760515bC52BeD0933c739D3954)
+	Get the data end of the day using Chainlink API Call to update the DynamicNFTs
+	
+	RequestArray
+		API - API to be call (https://web3-wheels-service.vercel.app/vehicles)
+		mintedTokens - the number of minted tokens already minted , it iterates over it		
+		
+	StatsMap - Get the data retrieved from teh API in a map (last call)
+		
+		
+		
+Mock data
+{
+	"tokenId":0,
+	"owner":"<OWNER_ADDRES>",
+	"name":"K.I.T.T",
+	"description":"1982 Pontiac Trans Am",
+	"image":"https://ipfs.io/ipfs/QmRU4ouTkpH7fMxLL3eVRrThtNk4cE8sym2gbNw9QpKzM6",   (Placeholder image in case you need it)
+	"vin":"KITT19820089926",
+	"location":"<HOME_LOCATION>",
+	"mileage_km":50000,    (It will start at zero)
+	"reputation": 5,       (It will start at zero)
+	"price_usd":10000,     
+	"revenue":70,          (It will start at zero)
+	"expenses":20,         (It will start at zero)
+	"data":[0,50000,5,10000,70,20]   For teh EOD porpouses
+}
+
