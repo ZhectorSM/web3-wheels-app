@@ -5,19 +5,11 @@
   "description": "1982 Pontiac Trans Am",
   "image": "https://ipfs.io/ipfs/QmRU4ouTkpH7fMxLL3eVRrThtNk4cE8sym2gbNw9QpKzM6",
   "vin": "KITT19820KS005705",
-  "location": "-73.9746686,40.7395275",
+  "location": "40.763218612574384,-73.96768571057004",
   "mileage_km": 25000,
   "reputation": 9,
-  "price_usd": 53000,
+  "price_usd": 53000,  
   "expenses": 120,
   "revenue": 200,
-  "operation_mode": 0,
-  "stats": [
-    2,
-    25000,
-    9,
-    53000,
-    120,
-    200
-  ]
+  "stats": [2, 25000, 9, 53000, 120, 200]
 }

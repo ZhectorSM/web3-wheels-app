@@ -2,6 +2,7 @@
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 interface NftCarInterface {
     function updateCarEOD(uint256 _tokenId, uint256 _mileage_km, uint256 _reputation, uint256 _expenses, uint256 _revenue) external;
@@ -31,7 +32,11 @@ contract CarEodDataConsumer is ChainlinkClient {
   uint256 private oraclePayment;
 
   constructor(address _NftCarAddress) {
+    //Sepolia: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+    //Scroll: 0x7273ebbB21F8D8AcF2bC12E71a08937712E9E40c
     setChainlinkToken(0x779877A7B0D9E8603169DdbD7836e478b4624789);
+    //Sepolia: 0x6c2e87340Ef6F3b7e21B2304D6C057091814f25E
+    //Scroll: Not supported
     setChainlinkOracle(0x6c2e87340Ef6F3b7e21B2304D6C057091814f25E);
     externalJobId = "eab9fe9db74f403d967ee207870a943f";
     oraclePayment = ((0 * LINK_DIVISIBILITY) / 10); // n * 10**18
@@ -39,13 +44,19 @@ contract CarEodDataConsumer is ChainlinkClient {
   }
 
   
-  function requestArray(string memory api)
+  function requestArray(string memory _api, uint256 _mintedTokens)
     public
   {
-    Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillArray.selector);
-    req.add("get", api);
-    req.add("path", "data");
-    sendOperatorRequest(req, oraclePayment);
+    for (uint256 i = 0; i < _mintedTokens; i++) {
+      
+      string memory apiCall = concatenateStrings(_api, Strings.toString(i));
+
+      Chainlink.Request memory req = buildChainlinkRequest(externalJobId, address(this), this.fulfillArray.selector);
+      req.add("get", apiCall);
+      req.add("path", "stats");
+      sendOperatorRequest(req, oraclePayment);      
+    }  
+
   }
 
   event RequestFulfilledArray(bytes32 indexed requestId, uint256[] _array);
@@ -64,5 +75,21 @@ contract CarEodDataConsumer is ChainlinkClient {
       carInterface.updateCarEOD(tokenId,_array[1],_array[2],_array[4],_array[5]);
   }     
 
+   function concatenateStrings(string memory a, string memory b) internal pure returns (string memory) {
+        bytes memory bytesA = bytes(a);
+        bytes memory bytesB = bytes(b);
+        string memory concatenatedString = new string(bytesA.length + bytesB.length);
+        bytes memory bytesConcatenated = bytes(concatenatedString);
+
+        uint k = 0;
+        for (uint i = 0; i < bytesA.length; i++) {
+            bytesConcatenated[k++] = bytesA[i];
+        }
+        for (uint i = 0; i < bytesB.length; i++) {
+            bytesConcatenated[k++] = bytesB[i];
+        }
+
+        return string(bytesConcatenated);
+    }
    
 }

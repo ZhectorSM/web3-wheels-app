@@ -5,19 +5,11 @@
   "description": "Self spinning car",
   "image": "https://ipfs.io/ipfs/QmSuwLBbmbNqi2Tpig5DzTtzFxpbcFV4yBwbbnX1nnTw5N",
   "vin": "WAUKEAFM8DA033285",
-  "location": "-73.9746686,40.7395275",
+  "location": "40.75603712675692,-73.98416203722446",
   "mileage_km": 111000,
   "reputation": 8,
-  "price_usd": 22000,
+  "price_usd": 22000,  
   "expenses": 135,
   "revenue": 358,
-  "operation_mode": 0,
-  "stats": [
-    1,
-    111000,
-    8,
-    22000,
-    135,
-    358
-  ]
+  "stats": [1, 111000, 8, 22000, 135, 358]
 }

@@ -1,11 +1,11 @@
 require('dotenv').config();
-const express = require('express');
-const simulation = require('./models/simulation')
-const databaseRouter = require('./routes/database-route')
-const simulationRouter = require('./routes/simulation-route')
+const express = require ('express');
+const { connectAIService } = require('./services/ai-service')
+const vehicles = require('./routes/vehicles')
+const passengers = require('./routes/passengers')
 
 const app = express();
-const port = process.env.SERVER_PORT || 5000;
+const port = process.env.SERVER_PORT || 5000; 
 const hostname = process.env.SERVER_HOSTNAME || 'localhost';
 
 // parse form data
@@ -13,8 +13,9 @@ app.use(express.urlencoded({ extended: false }))
 // parse json
 app.use(express.json())
 
-app.use('/db', databaseRouter)
-app.use('/sim', simulationRouter)
+
+app.use('/vehicles', vehicles)
+app.use('/passengers', passengers)
 
 //home call when service is up
 app.get('/', (req, res) => {  
@@ -23,14 +24,13 @@ app.get('/', (req, res) => {
 
 const start = async () => {
   try {
-    await simulation.setup()
-      .then(() => { simulation.start() })
-
-    app.listen(port, hostname, () =>
+    console.log('Connecting to AI service...');
+    //await connectAIService();
+    app.listen(port, hostname,() =>
       console.log(`Server is listening on port ${port}...`)
     );
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
