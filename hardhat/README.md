@@ -56,9 +56,6 @@ The next diagram depicts the interconnected smart contracts and their key functi
 - [Estimating Gas](#estimating-gas)
 - [Code Coverage](#code-coverage)
 - [Fuzzing](#fuzzing)
-- [Contributing](#contributing)
-- [Thank You!](#thank-you)
-  - [Resources](#resources)
 
 # Chainlink Hardhat Starter Kit
  Implementation of the following 4 Chainlink features using the [Hardhat](https://hardhat.org/) development environment:
