@@ -9,7 +9,7 @@ Web3Wheels is a decentralized autonomous Uber service utilizing blockchain and A
 
 ## Live Demo
  App: https://web3-wheels-app.vercel.app/   
- BackendApi: https://web3-wheels-service.vercel.app/vehicles/
+ BackendAPI: https://web3-wheels-service.vercel.app/vehicles/
 
 ## Table of Contents
 - [Installation](#installation)
